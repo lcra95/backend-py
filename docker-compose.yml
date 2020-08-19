@@ -1,0 +1,30 @@
+version: '2'
+services:
+  datos:
+    image: busybox
+    volumes:
+      - ../:/app
+      # /etc/localtime:/etc/localtime:ro 
+      # - ~/etc/timezone:/etc/localtime:ro
+      # - /etc/timezone:/etc/localtime:ro
+    networks:
+      - devinexoos
+  demo:
+    build:
+      context: ./docker
+    volumes_from:
+      - datos
+    ports:
+        - "5000:5000"
+    expose:
+      - "5000"
+    networks:
+      - devinexoos
+    external_links:
+      - redis:redis
+    depends_on:
+      - datos
+      # - smtp
+networks:
+  devinexoos:
+    external: true

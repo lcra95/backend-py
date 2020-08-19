@@ -1,0 +1,2 @@
+
+	python manage.py -h [HOST] -p [PUERTO] runserver

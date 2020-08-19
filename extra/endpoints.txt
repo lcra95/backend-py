@@ -1,0 +1,1 @@
+Se recomienda utilizar postman e importar el archivo base_flask.postman_collection.json. Las llamadas ya están construídas con información de ejemplo. De todas formas listo las url de consulta, aunque les tocará a ustedes ver los parámetros a enviar, etc.
