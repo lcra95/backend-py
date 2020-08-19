@@ -66,7 +66,6 @@ class ProductoResource(Resource):
                     "id_producto" : insert
                 }
                 Ima = ProductoImagen.insert(jsonImagen)
-                #comment
                 response = {
                     "producto" : insert,
                     "imagen": Ima,
