@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.functions import func
 from aplicacion.helpers.utilidades import Utilidades
 from aplicacion.modelos.PersonaDireccion import PersonaDireccion
+from aplicacion.modelos.UsuarioSucursal import UsuarioSucusrsal
 
 # db = SQLAlchemy()
 
@@ -146,7 +147,8 @@ class Persona(db.Model):
                     "telefono" : x.numero,
                     "correo" : x.correo,
                     "id_usuario" : x.user_id,
-                    "direcciones" :  PersonaDireccion.dirByUser(x.id)
+                    "direcciones" :  PersonaDireccion.dirByUser(x.id),
+                    "sucursales" : UsuarioSucusrsal.get_data_user(x.user_id)
                 } 
                 res.append(temp)
         return  res

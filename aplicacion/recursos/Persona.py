@@ -174,7 +174,7 @@ class personaFullResource(Resource):
             info = Persona.personaFullInfo(data["id"], data["correo"], data["telefono"])
             return info
         except Exception as e:
-            print(" ## Error ## \n")
-            print(e)
-            print("\n")
-            return {"message": "Ha ocurrido un error de conexión."}, 500
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {"message": msj}, 500
