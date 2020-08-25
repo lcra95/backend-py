@@ -118,6 +118,11 @@ class Producto(db.Model):
         query =  cls.query.filter_by(id_tipo_producto=_id).all()
         return  query
     @classmethod
+    def get_data_producto_name(cls, _id):
+        search = "%{}%".format(_id)
+        query =  cls.query.filter(Producto.nombre.like(search)).all()
+        return  query
+    @classmethod
     def get_data_sku(cls, sku):
         query =  cls.query.filter_by(sku=sku).first()
         return  Utilidades.obtener_datos(query)

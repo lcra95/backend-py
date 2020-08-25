@@ -125,14 +125,20 @@ class ProductoFilterResource(Resource):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument('id_cliente',
-                                type=int,
+                                type=str,
                                 required=False,
                                 help="Debe indicar id producto",
                                 
                                 )
             
             parser.add_argument('id_tipo_producto',
-                                type=int,
+                                type=str,
+                                required=False,
+                                help="Debe indicar id producto",
+                                
+                                )
+            parser.add_argument('nombre',
+                                type=str,
                                 required=False,
                                 help="Debe indicar id producto",
                                 
@@ -141,11 +147,12 @@ class ProductoFilterResource(Resource):
             data = parser.parse_args()
             iva = Iva.get_data(1)
             menu = []
-            if data['id_cliente']:
+            if 'id_cliente'in data and data['id_cliente'] is not None:
                 datos = Producto.get_data_cliente(data['id_cliente'])
-            elif data['id_tipo_producto']:
+            elif 'id_tipo_producto' in data and data['id_tipo_producto'] is not None:
                 datos = Producto.get_data_producto(data['id_tipo_producto'])
-                print(datos)
+            elif 'nombre' in data and data['nombre'] is not None:
+                datos = Producto.get_data_producto_name(data['nombre'])
             else:
                 datos = Producto.getAll()
 
