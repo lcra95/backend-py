@@ -8,7 +8,7 @@ from aplicacion.modelos.Direccion import Direccion
 from aplicacion.modelos.TipoDireccion import TipoDireccion
 from aplicacion.modelos.Comuna import Comuna
 from aplicacion.modelos.PersonaDireccion import PersonaDireccion
-
+import requests
 class DireccionResource(Resource):
 
     def get(self):
@@ -66,4 +66,57 @@ class DireccionResource(Resource):
             print(" ## Error ## \n")
             print(e)
             print("\n")
+            return {"message": "Ha ocurrido un error de conexión."}, 500
+
+class GetPlacesResource(Resource):
+    def get(self):
+        
+        try:
+            
+            parser = reqparse.RequestParser()
+            parser.add_argument('id',
+                                type=str,
+                                required=True,
+                                help="Debe indicar una fecha",
+                                
+                                )
+        
+            data = parser.parse_args()                      
+            url = "https://maps.googleapis.com/maps/api/distancematrix/json?" 
+            API_KEY= "AIzaSyCS-83KuAGkA9QdlcEn2Dd6bkBT_obAgvs"
+            dir_origen = "place_id:ChIJ2846_1LaYpYRUXtLyq4N2JA"
+            destino = Direccion.getPlaces(data["id"])
+
+            
+
+            params = {
+                "origins" : dir_origen,
+                "destinations": destino,
+                "key": API_KEY,
+                "avoid": "highways"
+            }
+
+            r = requests.get(url,params= params)
+            respuesta= r.json()
+
+            distancia = respuesta["rows"][0]["elements"][0]["distance"]["value"]
+            monto = Direccion.getMonto(distancia)
+            if monto:
+
+                return {
+                    "estado": 1,
+                    "distancia": respuesta["rows"][0]["elements"][0]["distance"]["text"],
+                    "monto": int(monto)
+                    }
+            else:
+                return{
+                    "estado": 0,
+                    "distancia" :respuesta["rows"][0]["elements"][0]["distance"]["text"],
+                    "monto": 0
+                }
+        except Exception as e:
+            print(" ## Error ## \n")
+            print(e)
+            print("\n")
+            return {"message": e}, 500
             return {"message": "Ha ocurrido un error de conexión."}, 500

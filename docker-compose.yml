@@ -25,6 +25,8 @@ services:
     depends_on:
       - datos
       # - smtp
+    environment:
+      - CRYPTOGRAPHY_ALLOW_OPENSSL_102=1
 networks:
   devinexoos:
     external: true

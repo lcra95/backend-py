@@ -11,13 +11,13 @@ class TestingConfig(Config):
     """
     Testing configurations 
     """
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://lrequena:18594LCra..@nrquena.ddns.net:3306/delivery"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://lrequena:18594LCra..@45.7.229.203:3306/delivery"
     SQLALCHEMY_POOL_RECYCLE = 200
     DEBUG = True
     TESTING = True
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    REDIS_URL = "redis://157.245.185.170:6379/0"
+    REDIS_URL = "redis://192.168.0.24:6379"
     PATH_STORAGE = "/app/testing/upload"
     ROOT_PATH = "/app"
     TIME_SESSION = 60000
@@ -36,7 +36,7 @@ class ProductionConfig(Config):
     TESTING = False
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    REDIS_URL = "redis://157.245.185.170:6379/0"
+    REDIS_URL = "redis://nrquena.ddns.net:6379/0"
     PATH_STORAGE = "/app/upload"
     ROOT_PATH = "/app"
     TIME_SESSION = 60000

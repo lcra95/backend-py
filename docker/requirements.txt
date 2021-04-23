@@ -55,4 +55,5 @@ virtualenv
 waitress
 Werkzeug
 WSGIserver
+cryptography==2.3
 pyTelegramBotAPI

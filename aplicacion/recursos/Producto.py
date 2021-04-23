@@ -11,6 +11,7 @@ from aplicacion.modelos.TipoProducto import TipoProducto
 from aplicacion.modelos.ProductoIngrediente import ProductoIngrediente
 from aplicacion.modelos.ProductoImagen import ProductoImagen
 from aplicacion.modelos.Iva import Iva
+from aplicacion.redis import redis
 import base64
 class ProductoResource(Resource):
 
@@ -223,6 +224,19 @@ class SkuProductResource(Resource):
                             
             return prod, 200
            
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {"message": msj}, 500
+
+class redisResource(Resource):
+    def post(self):
+        try:
+            key = 1
+            var = {"data": [1,2,3]}
+            redis.hset(key, "carro", var)
+            return "ready"
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]

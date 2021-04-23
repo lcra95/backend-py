@@ -8,6 +8,7 @@ from sqlalchemy.dialects.mysql.enumerated import ENUM
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.functions import func
 from aplicacion.helpers.utilidades import Utilidades
+from aplicacion.modelos.OrdenDetalle import OrdenDetalle
 
 # db = SQLAlchemy()
 
@@ -22,6 +23,7 @@ class Orden(db.Model):
     id_persona = db.Column(db.String(128), nullable=False)
     id_tipo_entrega = db.Column(db.Integer, nullable=False)
     id_sucursal = db.Column(db.Integer, nullable=False)
+    estado = db.Column(db.Integer, nullable=False)
     id_creador = db.Column(db.Integer, nullable=False)
     hora_recepcion = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     hora_salida = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
@@ -53,6 +55,7 @@ class Orden(db.Model):
             hora_salida = dataJson['hora_salida'],
             created_at = func.NOW(),
             updated_at = func.NOW(),
+            estado = 1,
             )
         Orden.guardar(query)
         if query.id:                            
@@ -81,6 +84,8 @@ class Orden(db.Model):
                     query.hora_recepcion = dataJson['hora_recepcion']
                 if 'created_at' in dataJson:
                     query.created_at = dataJson['created_at']         
+                if 'estado' in dataJson:
+                    query.estado = dataJson['estado']         
                
                 query.updated_at = func.NOW()
                 db.session.commit()
@@ -119,11 +124,50 @@ class Orden(db.Model):
         query = db.session.execute(sql)
         res = []
         if query:
+            depto = ''
             for x in query:
+                if x.departamento is not None:
+                    depto = x.departamento 
                 temp = {
                     "nombre": x.nombre + " " + x.apellido_paterno,
                     "telefono": x.telefono,
-                    "direccion" : x.direccion_escrita + " " + x.numero + " " + x.tipo + " " + x.departamento + ", " + x.comuna
+                    "direccion" : x.direccion_escrita + " " + x.numero + " " + x.tipo + " " + depto + ", " + x.comuna
+                }
+                res.append(temp)
+        return  res
+    @classmethod
+    def ordenFullInfoData(cls, _sucursal, _fecha, estado):
+        sql =   "SELECT \
+                    CASE WHEN o.estado = 1 then 'Pendiente' WHEN o.estado = 2 then 'En Curso' WHEN o.estado = 3 then 'Despachada' WHEN o.estado = 4 then 'Entregada' END as estado, \
+                	date_format(o.created_at, '%d-%m-%Y') as fecha, \
+                    date_format(o.created_at, '%H:%I:%S') as hora, o.id, \
+                    concat(p.nombre,' ', p.apellido_paterno) as nombre, te.nombre as tipo_entrega, \
+                    concat(d.direccion_escrita, ' ', d.numero, ' ',d.departamento ) as direccion, \
+                    t.numero, c.direccion as correo \
+                FROM orden o \
+                JOIN persona p on p.id = o.id_persona \
+                LEFT JOIN direccion d ON d.id = o.id_direccion \
+                JOIN tipo_entrega te ON te.id = o.id_tipo_entrega \
+                JOIN telefono t ON t.id_persona = o.id_persona \
+                JOIN correo c ON c.id_persona = o.id_persona \
+                WHERE o.id_sucursal = " + str(_sucursal) + " and o.estado = " + str(estado) + " and date_format(o.created_at, '%d-%m-%Y') = '"+ str(_fecha) +"'  \
+                ORDER BY o.id ASC"
+       
+        query = db.session.execute(sql)
+        res = []
+        if query:
+            for x in query:
+                temp = {
+                    "id": x.id,
+                    "estado" : x.estado,
+                    "fecha": x.fecha,
+                    "hora": x.hora,
+                    "nombre": x.nombre,
+                    "direccion" : x.direccion,
+                    "tipo_entrega" : x.tipo_entrega,
+                    "numero": x.numero,
+                    "correo":  x.correo,
+                    "detalle": OrdenDetalle.DetalleByOrden(x.id)
                 }
                 res.append(temp)
         return  res

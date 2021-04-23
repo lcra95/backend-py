@@ -26,7 +26,7 @@ from aplicacion.redis import redis
 
 # IMPORTACIÓN DE RECURSOS
 from aplicacion.recursos.TipoDireccion import TipoDireccionResource
-from aplicacion.recursos.Direccion import DireccionResource
+from aplicacion.recursos.Direccion import DireccionResource, GetPlacesResource
 from aplicacion.recursos.PersonaDireccion import PersonaDireccionResource
 from aplicacion.recursos.TipoIngrediente import TipoIngredienteResource
 from aplicacion.recursos.TipoPersona import TipoPersonaResource
@@ -36,7 +36,7 @@ from aplicacion.recursos.Region import RegionResource
 from aplicacion.recursos.Persona import PersonaResource, personaFullResource
 from aplicacion.recursos.Ingrediente import IngredienteResource
 from aplicacion.recursos.Cliente import ClienteResource, SearchClienteResource
-from aplicacion.recursos.Producto import ProductoResource, ProductoDetalleResource, ProductoFilterResource, SkuProductResource
+from aplicacion.recursos.Producto import ProductoResource, ProductoDetalleResource, ProductoFilterResource, SkuProductResource,redisResource
 from aplicacion.recursos.ProductoIngrediente import ProductoIngredienteResource
 from aplicacion.recursos.ProductoImagen import ProductoImagenResource
 from aplicacion.recursos.Telefono import TelefonoResource
@@ -44,7 +44,7 @@ from aplicacion.recursos.Correo import CorreoResource
 from aplicacion.recursos.Comuna import ComunaResource, ComunabyprovinciaResource
 from aplicacion.recursos.Provincia import ProvinciaResource
 from aplicacion.recursos.Repartidor import RepartidorResource
-from aplicacion.recursos.Orden import OrdenResource
+from aplicacion.recursos.Orden import OrdenResource, OrdenFullResource
 from aplicacion.recursos.OrdenRepartidor import OrdenRepartidorResource
 from aplicacion.recursos.TipoPago import TipoPagoResource
 from aplicacion.recursos.Sucursal import SucursalResource
@@ -58,6 +58,7 @@ from aplicacion.recursos.ClienteCuenta import ClienteCuentaResource
 from aplicacion.recursos.TipoDocumento import TipoDocumentoResource
 from aplicacion.recursos.Recepcion import RecepcionResource
 from aplicacion.recursos.ProductoStock import ProductoStockResource
+from aplicacion.recursos.movimiento import MovimientoResource
 #Inicializacion de flask
 app = Flask(__name__)
 
@@ -99,6 +100,7 @@ api.add_resource(ProductoDetalleResource,'/producto/detalle')
 api.add_resource(SkuProductResource, '/sku')
 api.add_resource(RecepcionResource, '/recepcion')
 api.add_resource(ProductoStockResource, '/stock')
+api.add_resource(OrdenFullResource, '/ordenfull')
 
 ## PERSONALES
 api.add_resource(PersonaResource, '/persona')
@@ -117,6 +119,7 @@ api.add_resource(TipoDireccionResource, '/tipodireccion')
 api.add_resource(DireccionResource, '/direccion')
 api.add_resource(SucursalResource, '/sucursal')
 api.add_resource(RangoDeliveryResource, '/rangodelivery')
+api.add_resource(GetPlacesResource,'/getplace')
 
 #usuarios
 api.add_resource(UsuarioResource, '/usuario')
@@ -128,6 +131,7 @@ api.add_resource(TipoCuentaResource, '/tipocuenta')
 api.add_resource(BancoResource, '/banco')
 api.add_resource(ClienteCuentaResource, '/clientecuenta')
 api.add_resource(TipoDocumentoResource, '/tipodocumento')
+api.add_resource(MovimientoResource, '/movimiento')
 #ROUTES
 @app.route('/')
 def index():

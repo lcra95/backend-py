@@ -131,6 +131,21 @@ class OrdenResource(Resource):
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
             return {'mensaje': str(msj)},500
+    def put(self):
+        try:
+           
+            dataJson = request.get_json()      
+            edit = Orden.update_data(dataJson["id"], dataJson)
+            if edit:
+                return {"estado" : 1, "orden" : edit}
+               
+            return {"estado" : 0, "msj": "Ha ocurrido un error"}
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {'mensaje': str(msj)},500
+
 
 # class PagoOnLineResource(Resource):
 #     def post(self):
@@ -145,3 +160,34 @@ class OrdenResource(Resource):
 #             print(e)
 #             print("\n")
 #             return {"message": "Ha ocurrido un error de conexión."}, 500      
+class OrdenFullResource(Resource):
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('fecha',
+                                type=str,
+                                required=True,
+                                help="Debe indicar id prestador",
+                                
+                                )
+            parser.add_argument('id_sucursal',
+                                type=str,
+                                required=True,
+                                help="Debe indicar id prestador",
+                                
+                                )
+            parser.add_argument('estado',
+                                type=str,
+                                required=True,
+                                help="Debe indicar id prestador",
+                                
+                                )
+            data = parser.parse_args()
+            Info = Orden.ordenFullInfoData(data["id_sucursal"], data["fecha"], data["estado"])
+
+            return Info
+        except Exception as e:
+            print(" ## Error ## \n")
+            print(e)
+            print("\n")
+            return {"message": "Ha ocurrido un error de conexión."}, 500      

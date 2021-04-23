@@ -10,6 +10,7 @@ from aplicacion.telegram import bot
 from aplicacion.modelos.Teleg import Telegram
 import requests
 from aplicacion.modelos.Orden import Orden
+from datetime import date, datetime
 class ClienteResource(Resource):
 
     def get(self):
@@ -105,37 +106,138 @@ class SearchClienteResource(Resource):
             
             info = r.json()
             for x in info["result"]:
+                msj = x["message"]["text"].strip()
+                if msj.upper() == 'ENTRAR':
+                    entro = Asistencia.entrada()
+                    indicador = x["message"]["from"]["id"]
+                    respondido = Telegram.get_data(x["update_id"])
+                    
+                    if not respondido:
+                        bot.send_message(indicador, entro)
+                        
+                        ins = {
+                            "id_update" : x["update_id"],
+                            "id_chat" : x["message"]["from"]["id"]
+                        }
+                        Telegram.insert(ins)
+                elif msj.upper() == 'SALIR':
+                    salgo = Asistencia.salida()
+                    indicador = x["message"]["from"]["id"]
+                    respondido = Telegram.get_data(x["update_id"])
+                    
+                    if not respondido:
+                        bot.send_message(indicador, salgo)
+                        ins = {
+                            "id_update" : x["update_id"],
+                            "id_chat" : x["message"]["from"]["id"]
+                        }
+                        Telegram.insert(ins)
+                else:
+                    orden = x["message"]["text"].split(" ")
+                    if len(orden) > 1:
+                        if orden[1]:
+                            try:
+                                exist = Orden.ordenFullInfo(orden[1])
+            
+                            except Exception as e:
+                                exc_type, exc_obj, exc_tb = sys.exc_info()
+                                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                                msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+                                return {'mensaje': str(msj) }, 500
 
-                orden = x["message"]["text"].split(" ")
-                if len(orden) > 1:
-                    if orden[1]:
-                        try:
-                            exist = Orden.ordenFullInfo(orden[1])
-        
-                        except Exception as e:
-                            print (e)
-
-                        if exist:
-                            first ="Nombre= " + str(exist[0]["nombre"]) +" \n"
-                            first +="Teléfono= " + str(exist[0]["telefono"]) +" \n"
-                            first +="Dirección= " + str(exist[0]["direccion"]) +" \n"
-                            llamar = exist[0]["telefono"]
-                        if orden[0] == 'o' or orden[0] == 'O' and exist:
-                            indicador = x["message"]["from"]["id"]
-                            respondido = Telegram.get_data(x["update_id"])
-                            
-                            if not respondido:
-                                bot.send_message(indicador, first)
-                                bot.send_message(indicador, llamar)
-                                ins = {
-                                    "id_update" : x["update_id"],
-                                    "id_chat" : x["message"]["from"]["id"]
-                                }
-                                Telegram.insert(ins)
+                            if exist:
+                                first ="Nombre= " + str(exist[0]["nombre"]) +" \n"
+                                first +="Teléfono= " + str(exist[0]["telefono"]) +" \n"
+                                first +="Dirección= " + str(exist[0]["direccion"]) +" \n"
+                                llamar = exist[0]["telefono"]
+                            if orden[0] == 'o' or orden[0] == 'O' and exist:
+                                indicador = x["message"]["from"]["id"]
+                                respondido = Telegram.get_data(x["update_id"])
+                                
+                                if not respondido:
+                                    bot.send_message(indicador, first)
+                                    bot.send_message(indicador, llamar)
+                                    ins = {
+                                        "id_update" : x["update_id"],
+                                        "id_chat" : x["message"]["from"]["id"]
+                                    }
+                                    Telegram.insert(ins)
 
             return r.json()
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {'mensaje': str(msj) }, 500
+
+class Asistencia():
+    @staticmethod
+    def salida():
+        
+        try:
+            fecha = datetime.now()
+            hora = fecha.hour - 3
+            minu = fecha.minute
+            segundo = fecha.second              
+            fechddef = str(hora) +":"+str(minu) +":"+str(segundo)
+            params = {
+                "contrasena" : "18594lcra*"
+            }
+            url = "https://api-trabajador.nusystem.com/personas/25957199-5/acceso"
+            resp = requests.post(url, data = params)
+            defi = json.loads(resp.text) 
+            token = defi["token_id"]
+
+            header = {"token": token}
+            body = {
+                "tipo" : 2,
+                "hora" :fechddef
+            }
+
+            url2 = "https://api-trabajador.nusystem.com/empleado/14405/asistencia"
+            resp2 = requests.post(url2, data = body, headers = header)
+            defi2 = json.loads(resp2.text) 
+
+            print(defi2)
+            return "Salida " + fechddef
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            # exc_type, fname, exc_tb.tb_lineno
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {'mensaje': str(msj) }, 500
+    @staticmethod
+    def entrada():
+        
+        try:
+            fecha = datetime.now()
+            hora = fecha.hour - 3
+            minu = fecha.minute
+            segundo = fecha.second
+            fechddef = str(hora) +":"+str(minu) +":"+str(segundo)
+            params = {
+                "contrasena" : "18594lcra*"
+            }
+            url = "https://api-trabajador.nusystem.com/personas/25957199-5/acceso"
+            resp = requests.post(url, data = params)
+            defi = json.loads(resp.text) 
+            token = defi["token_id"]
+
+            header = {"token": token}
+            body = {
+                "tipo" : 1,
+                "hora" :fechddef
+            }
+
+            url2 = "https://api-trabajador.nusystem.com/empleado/14405/asistencia"
+            resp2 = requests.post(url2, data = body, headers = header)
+            defi2 = json.loads(resp2.text) 
+            print(defi2)
+            return "Entrada " + fechddef
+            
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            # exc_type, fname, exc_tb.tb_lineno
             msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
             return {'mensaje': str(msj) }, 500

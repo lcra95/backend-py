@@ -96,3 +96,30 @@ class Direccion(db.Model):
     def eliminar(self):
         db.session.delete(self)
         db.session.commit()
+
+    @classmethod
+    def getPlaces(cls,_id):
+        sql =   "SELECT \
+                    concat(	direccion_escrita, ' ', numero, ', ', c.nombre) as dir \
+                FROM direccion d \
+                JOIN comuna c on c.id = d.id_comuna \
+                WHERE d.id = " + str(_id)
+        
+        query = db.session.execute(sql)
+
+        if query:
+            for x in query:               
+                return str(x.dir)
+
+        return None
+    @classmethod
+    def getMonto(cls, distance):
+        sql =   "select * from rango_delivery WHERE "+ str(distance) +" between desde and hasta;"
+        
+        query = db.session.execute(sql)
+
+        if query:
+            for x in query:               
+                return str(x.monto)
+
+        return None
