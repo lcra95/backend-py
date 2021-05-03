@@ -19,9 +19,11 @@ class ProductoResource(Resource):
         menu = []
         try:
             datos = Producto.getAll()
+            return 'he'
             if datos:
                 for row in datos:
-                    imagen = ProductoImagen.get_data(row.id)
+                    imagen = ProductoImagen.get_data_id(row.id)
+
                     iva = Iva.get_data(row.id_iva)
                     fix_iva = row.precio - round(row.precio/iva[0]["valor"],0)
                     fix_precio_bruto = row.precio - fix_iva
@@ -55,8 +57,17 @@ class ProductoResource(Resource):
 
     def post(self):
         try:
+            ruta = "/app/backend-py/aplicacion/clients/01/"
+            # ruta = app.config['ROOT_PATH']+ '/backend-py/aplicacion/clients/01/'
+            
             imagen = "noimage.png"
-            dataJson = request.get_json()
+            if  request.files["imagen"]:
+                imagen = request.files["imagen"]
+                filename = imagen.filename
+                imagen.save(os.path.join(ruta, filename))
+                params = request.form.to_dict()
+                dataJson = params
+                dataJson["imagen"] = imagen.filename
             insert = Producto.insert(dataJson)
             if insert:
                 if 'imagen' in dataJson and dataJson["imagen"]:
@@ -99,7 +110,7 @@ class ProductoDetalleResource(Resource):
             Prod = Producto.get_data(data['id'])
             if Prod:  
                 iva = Iva.get_data(Prod[0]["id_iva"])
-                imagen = ProductoImagen.get_data(Prod[0]['id'])
+                imagen = ProductoImagen.get_data_id(Prod[0]['id'])
                 cliente = Cliente.get_data(Prod[0]['id_cliente'])
 
                 Prod[0]["fix_iva"] =Prod[0]["precio"] - round(Prod[0]["precio"]/iva[0]["valor"],0)
@@ -160,7 +171,7 @@ class ProductoFilterResource(Resource):
             if datos:
                 for row in datos:
                     img = None
-                    imagen = ProductoImagen.get_data(row.id)
+                    imagen = ProductoImagen.get_data_id(row.id)
                     if imagen:
                         img = imagen[0]['id']
                     iva = Iva.get_data(row.id_iva)

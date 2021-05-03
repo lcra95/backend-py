@@ -28,6 +28,7 @@ class Producto(db.Model):
     descripcion = db.Column(db.String(256), nullable=False)
     sku = db.Column(db.String(256), nullable=False)
     id_iva = db.Column(db.Integer, nullable=False)
+    estado = db.Column(db.Integer, nullable=False)
     barcode = db.Column(db.String(256), nullable=True)
     #CRUD
 
@@ -55,6 +56,7 @@ class Producto(db.Model):
             sku = dataJson['sku'],
             id_iva = dataJson['id_iva'],
             barcode = dataJson['barcode'],
+            estado = dataJson['estado'],
             )
         Producto.guardar(query)
         if query.id:                            
@@ -85,6 +87,8 @@ class Producto(db.Model):
                     query.id_iva = dataJson['id_iva']         
                 if 'barcode' in dataJson:
                     query.barcode = dataJson['barcode']         
+                if 'estado' in dataJson:
+                    query.estado = dataJson['estado']         
                
                 query.updated_at = func.NOW()
                 db.session.commit()
@@ -111,16 +115,16 @@ class Producto(db.Model):
 
     @classmethod
     def get_data_cliente(cls, _id):
-        query =  cls.query.filter_by(id_cliente=_id).all()
+        query =  cls.query.filter_by(id_cliente=_id, estado = 1).all()
         return  query
     @classmethod
     def get_data_producto(cls, _id):
-        query =  cls.query.filter_by(id_tipo_producto=_id).all()
+        query =  cls.query.filter_by(id_tipo_producto=_id, estado = 1).all()
         return  query
     @classmethod
     def get_data_producto_name(cls, _id):
         search = "%{}%".format(_id)
-        query =  cls.query.filter(Producto.nombre.like(search)).all()
+        query =  cls.query.filter(Producto.nombre.like(search), estado = 1).all()
         return  query
     @classmethod
     def get_data_sku(cls, sku):
