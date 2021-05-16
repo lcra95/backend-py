@@ -117,10 +117,6 @@ class Movimiento(db.Model):
                 JOIN centro_costo cc ON cc.id = m.id_centro_costo \
                 WHERE 1 = 1 " + str(filtro)
         
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-        print(sql)
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-
         query = db.session.execute(sql)
         result = []
         if query:

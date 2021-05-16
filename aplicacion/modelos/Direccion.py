@@ -26,6 +26,7 @@ class Direccion(db.Model):
     id_tipo_direccion = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
+    id_place = db.Column(db.String(128), nullable=False)
     #CRUD
 
 
@@ -49,6 +50,7 @@ class Direccion(db.Model):
             id_tipo_direccion = dataJson['id_tipo_direccion'],
             created_at = func.NOW(),
             updated_at = func.NOW(),
+            id_place = dataJson['id_place'],
             )
         Direccion.guardar(query)
         if query.id:                            
@@ -73,6 +75,8 @@ class Direccion(db.Model):
                     query.id_tipo_direccion = dataJson['id_tipo_direccion']
                 if 'created_at' in dataJson:
                     query.created_at = dataJson['created_at']         
+                if 'id_place' in dataJson:
+                    query.id_place = dataJson['id_place']         
                
                 query.updated_at = func.NOW()
                 db.session.commit()
@@ -100,7 +104,7 @@ class Direccion(db.Model):
     @classmethod
     def getPlaces(cls,_id):
         sql =   "SELECT \
-                    concat(	direccion_escrita, ' ', numero, ', ', c.nombre) as dir \
+                    id_place as dir \
                 FROM direccion d \
                 JOIN comuna c on c.id = d.id_comuna \
                 WHERE d.id = " + str(_id)

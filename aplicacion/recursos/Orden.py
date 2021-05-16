@@ -67,7 +67,7 @@ class OrdenResource(Resource):
             documento = 39
             fecha_emision = datetime.now()
             id_comprador = None
-
+            estado = 2
             dataJson = request.get_json()
             if 'id_tipo_documento' in dataJson and dataJson["id_tipo_documento"]:
                 documento = dataJson["id_tipo_documento"]
@@ -102,13 +102,16 @@ class OrdenResource(Resource):
                         "precio_iva" : producto['iva']
                     }
                     insertDetalle = OrdenDetalle.insert(jsonOrdenDetalle)
-
+                if "estado" in dataJson["pago"]:
+                    estado = dataJson["pago"]['estado']
                 jsonOrdenPago = {
                     "id_orden" : insert,
                     "id_tipo_pago" : dataJson["pago"]['id_tipo_pago'],
                     "monto":  dataJson["pago"]['monto'],
                     "voucher" : dataJson["pago"]['voucher'],
                     "comprobante" : dataJson["pago"]['comprobante'],
+                    "vuelto" : dataJson["pago"]['vuelto'],
+                    "estado" : estado
                 }
 
                 insertOrdenPago = OrdenPago.insert(jsonOrdenPago)

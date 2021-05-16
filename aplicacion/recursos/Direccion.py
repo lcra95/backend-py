@@ -85,7 +85,7 @@ class GetPlacesResource(Resource):
             url = "https://maps.googleapis.com/maps/api/distancematrix/json?" 
             API_KEY= "AIzaSyCS-83KuAGkA9QdlcEn2Dd6bkBT_obAgvs"
             dir_origen = "place_id:ChIJ2846_1LaYpYRUXtLyq4N2JA"
-            destino = Direccion.getPlaces(data["id"])
+            destino = "place_id:"+str(Direccion.getPlaces(data["id"]))
 
             
 

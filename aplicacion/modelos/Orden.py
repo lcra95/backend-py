@@ -117,21 +117,25 @@ class Orden(db.Model):
                 FROM orden o \
                 JOIN persona p ON p.id = o.id_persona \
                 JOIN telefono t ON t.id_persona = p.id \
-                JOIN direccion d ON d.id = o.id_direccion \
-                JOIN comuna c ON c.id = d.id_comuna \
-                JOIN tipo_direccion td ON td.id = d.id_tipo_direccion where o.id = '+ str(_id) +' '
+                LEFT JOIN direccion d ON d.id = o.id_direccion \
+                LEFT JOIN comuna c ON c.id = d.id_comuna \
+                LEFT JOIN tipo_direccion td ON td.id = d.id_tipo_direccion where o.id = '+ str(_id) +' '
        
         query = db.session.execute(sql)
         res = []
         if query:
             depto = ''
+            direccion = ''
             for x in query:
                 if x.departamento is not None:
                     depto = x.departamento 
+                if x.direccion_escrita  is not None:
+                    direccion = str(x.direccion_escrita + ", " + x.tipo + " " + depto ).upper()
                 temp = {
                     "nombre": x.nombre + " " + x.apellido_paterno,
                     "telefono": x.telefono,
-                    "direccion" : x.direccion_escrita + " " + x.numero + " " + x.tipo + " " + depto + ", " + x.comuna
+                    "direccion" : direccion,
+                    "detalle": OrdenDetalle.DetalleByOrden(_id)
                 }
                 res.append(temp)
         return  res

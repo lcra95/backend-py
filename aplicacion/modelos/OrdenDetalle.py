@@ -127,7 +127,7 @@ class OrdenDetalle(db.Model):
                     "precio_extendido" : x.precio_extendido,
                     "precio_iva" : x.precio_iva,
                     "precio_total" : x.precio_total,
-                    "data_repartidor": Producto.get_data(x.id_producto)
+                    "data_producto": Producto.get_data(x.id_producto)
                 }
                 result.append(temp)
         

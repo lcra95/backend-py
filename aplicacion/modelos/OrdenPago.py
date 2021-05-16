@@ -26,6 +26,8 @@ class OrdenPago(db.Model):
     comprobante = db.Column(db.LargeBinary)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
+    vuelto = db.Column(db.Integer, nullable=False)
+    estado = db.Column(db.Integer, nullable=False)
     #CRUD
 
 
@@ -49,6 +51,8 @@ class OrdenPago(db.Model):
             comprobante = dataJson['comprobante'],
             created_at = func.NOW(),
             updated_at = func.NOW(),
+            vuelto = dataJson['vuelto'],
+            estado = dataJson['estado'],
             )
         OrdenPago.guardar(query)
         if query.id:                            

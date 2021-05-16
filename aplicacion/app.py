@@ -60,7 +60,10 @@ from aplicacion.recursos.Recepcion import RecepcionResource
 from aplicacion.recursos.ProductoStock import ProductoStockResource
 from aplicacion.recursos.movimiento import MovimientoResource
 #Inicializacion de flask
-app = Flask(__name__)
+app = Flask(__name__, 
+static_url_path='/api_static',
+static_folder='api_static',
+template_folder='templates')
 
 #habilitacion de CORS
 CORS(app)
@@ -159,6 +162,19 @@ def pagoscallback():
     print("############### FIN PAGOS CALLBACK ##################")
     return data, 200
 
+@app.route('/imprimir-orden/<int:_id>')
+def imprime(_id):
+    from aplicacion.modelos.Orden import Orden
+    info = Orden.ordenFullInfo(_id)
+    deff = 0
+    for tot in info[0]["detalle"]:
+        deff = deff + tot["precio_total"]
+    
+    info[0]["total_orden"] = deff
+    
+    # return info[0]
+
+    return render_template("orden.html", data = info)
 #INICIAMOS LA APLICACIÓN
 app.run(host='0.0.0.0', port=5000, debug=True )
     
