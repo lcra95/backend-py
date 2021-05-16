@@ -33,6 +33,10 @@ class ProductoImagen(db.Model):
 
     @classmethod
     def get_data(cls, _id):
+        query =  cls.query.filter_by(id=_id).first()
+        return  Utilidades.obtener_datos(query)
+    @classmethod
+    def get_data_id(cls, _id):
         query =  cls.query.filter_by(id_producto=_id).first()
         return  Utilidades.obtener_datos(query)
 

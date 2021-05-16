@@ -146,7 +146,9 @@ def getimagen(path):
 
     ruta = ProductoImagen.get_data(path)
     path = ruta[0]['imagen']
-    print(app.config['ROOT_PATH']+ '/backend-py/aplicacion/clients/01/'+path)
+    # print("------------------")
+    # print(app.config['ROOT_PATH']+ '/backend-py/aplicacion/clients/01/'+path)
+    # print("------------------")
     return send_file(app.config['ROOT_PATH']+ '/backend-py/aplicacion/clients/01/'+path)
 
 @app.route('/pagoenlinea', methods=['GET', 'POST'] )
