@@ -127,3 +127,26 @@ class OrdenPago(db.Model):
                 result.append(temp)
         
         return  result
+
+    @classmethod
+    def update_data_pago(cls, _id, dataJson):
+        try:
+            db.session.rollback()
+            query = cls.query.filter_by(id_orden=_id).first()
+            if query:
+      
+                if 'estado' in dataJson:
+                    query.estado = dataJson['estado']         
+               
+                query.updated_at = func.NOW()
+                db.session.commit()
+                if query.id:                            
+                    return query.id
+            return  None
+        except Exception as e:
+            print("=======================E")
+            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {'mensaje': str(msj) }, 500
