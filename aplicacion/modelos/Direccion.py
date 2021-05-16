@@ -42,9 +42,12 @@ class Direccion(db.Model):
 
     @classmethod
     def insert(cls, dataJson):
+        numero = None
+        if "numero" in dataJson:
+            numero = dataJson['numero']
         query = Direccion( 
             direccion_escrita = dataJson['direccion_escrita'],
-            numero = dataJson['numero'],
+            numero = numero,
             departamento = dataJson['departamento'],
             id_comuna = dataJson['id_comuna'],
             id_tipo_direccion = dataJson['id_tipo_direccion'],
@@ -106,7 +109,7 @@ class Direccion(db.Model):
         sql =   "SELECT \
                     id_place as dir \
                 FROM direccion d \
-                JOIN comuna c on c.id = d.id_comuna \
+                LEFT JOIN comuna c on c.id = d.id_comuna \
                 WHERE d.id = " + str(_id)
         
         query = db.session.execute(sql)

@@ -52,7 +52,7 @@ class PersonaResource(Resource):
             tipo_persona = 1
             depto = None
             departamento = None
-
+            numerod = None
             dataJson = request.get_json()
 
             if 'apellido' in dataJson and dataJson["apellido"]:
@@ -60,13 +60,16 @@ class PersonaResource(Resource):
             if 'tipo_persona' in dataJson and dataJson["tipo_persona"]:
                 apellido = dataJson["tipo_persona"]
             if 'numerod' in dataJson and dataJson["numerod"]:
-                depto = dataJson["numerod"]
+                numerod = dataJson["numerod"]
             if 'departamento' in dataJson and dataJson["departamento"]:
                 depto = dataJson["departamento"]
 
-            
+            identificacion =None
+            if "identificacion" in dataJson:
+                identificacion = dataJson["identificacion"]
+
             jsoPersona = {
-                "identificacion": dataJson["identificacion"],
+                "identificacion": identificacion,
                 "nombre": dataJson["nombre"],
                 "apellido_paterno": apellido,
                 "apellido_materno": None,
@@ -90,13 +93,16 @@ class PersonaResource(Resource):
                    "direccion" : dataJson["email"] 
                 }
                 corInsert = Correo.insert(jsonEmail)
-                
+                comuna = None
+                if "id_comuna" in dataJson:
+                    comuna = dataJson["id_comuna"]
                 jsonDireccion = {
-                    "id_comuna" : dataJson["id_comuna"],
+                    "id_comuna" : comuna,
                     "id_tipo_direccion": dataJson["id_tipo_direccion"],
                     "direccion_escrita": dataJson["direccion"],
-                    "numero": depto,
-                    "departamento": departamento
+                    "numero": numerod,
+                    "departamento": depto,
+                    "id_place" : dataJson["id_place"]
                 }
                 insertDir = Direccion.insert(jsonDireccion)
                 if insertDir:

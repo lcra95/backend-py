@@ -46,13 +46,16 @@ class Persona(db.Model):
 
     @classmethod
     def insert(cls, dataJson):
+        identificacion =None
+        if "identificacion" in dataJson:
+            identificacion = dataJson['identificacion']
         query = Persona( 
             nombre = dataJson['nombre'],
             apellido_paterno = dataJson['apellido_paterno'],
             apellido_materno = dataJson['apellido_materno'],
             genero = dataJson['genero'],
             tipo_persona = dataJson['tipo_persona'],
-            identificacion = dataJson['identificacion'],
+            identificacion = identificacion,
             fecha_nacimiento = dataJson['fecha_nacimiento'],
             created_at = func.NOW(),
             updated_at = func.NOW(),

@@ -121,9 +121,9 @@ class PersonaDireccion(db.Model):
                 	d.id AS direccion_id, d.direccion_escrita,  d.numero,td.nombre as tipo, d.departamento, c.id AS comuna_id, c.nombre as comuna, p.nombre as provincia \
                 FROM persona_direccion pd \
                 JOIN direccion d ON d.id = pd.id_direccion \
-                JOIN comuna c ON c.id = d.id_comuna \
-                JOIN tipo_direccion td ON td.id = d.id_tipo_direccion \
-                JOIN provincia p ON p.id = c.id_provincia \
+                LEFT JOIN comuna c ON c.id = d.id_comuna \
+                LEFT JOIN tipo_direccion td ON td.id = d.id_tipo_direccion \
+                LEFT JOIN provincia p ON p.id = c.id_provincia \
                 WHERE pd.id_persona =" + str(id_persona)
 
         query = db.session.execute(sql)

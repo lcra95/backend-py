@@ -159,16 +159,10 @@ def pagoscallback():
     try:
         data["form_data"] = request.form.to_dict()
         data["dataJson"] = request.get_json()
-        print("----------------------------")
-        print(data["dataJson"]["order"])
-        print("----------------------------")
         jsonUp ={
             "estado": 1
         }
         vari = OrdenPago.update_data_pago(data["dataJson"]["order"],jsonUp )
-        print("******************")
-        print(vari)
-        print("******************")
     except Exception as e:
         print(e)
     print("############### FIN PAGOS CALLBACK ##################")
