@@ -154,11 +154,18 @@ def getimagen(path):
 @app.route('/pagoenlinea', methods=['GET', 'POST'] )
 def pagoscallback():
     print("############### PAGOS CALLBACK ##################")
+    from aplicacion.modelos.OrdenPago import OrdenPago
     data = {}
     try:
         data["form_data"] = request.form.to_dict()
         data["dataJson"] = request.get_json()
-        print(data)
+        print("----------------------------")
+        print(data["dataJson"]["order"])
+        print("----------------------------")
+        jsonUp ={
+            "estado": 1
+        }
+        OrdenPago.update_data(data["dataJson"]["order"],jsonUp )
     except Exception as e:
         print(e)
     print("############### FIN PAGOS CALLBACK ##################")
