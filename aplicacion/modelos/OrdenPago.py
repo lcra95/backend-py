@@ -77,6 +77,10 @@ class OrdenPago(db.Model):
                     query.comprobante = dataJson['comprobante']
                 if 'created_at' in dataJson:
                     query.created_at = dataJson['created_at']         
+                if 'estado' in dataJson:
+                    query.estado = dataJson['estado']         
+                if 'vuelto' in dataJson:
+                    query.vuelto = dataJson['vuelto']         
                
                 query.updated_at = func.NOW()
                 db.session.commit()
