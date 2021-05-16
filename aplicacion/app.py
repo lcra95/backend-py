@@ -165,7 +165,10 @@ def pagoscallback():
         jsonUp ={
             "estado": 1
         }
-        OrdenPago.update_data(data["dataJson"]["order"],jsonUp )
+        vari = OrdenPago.update_data(data["dataJson"]["order"],jsonUp )
+        print("******************")
+        print(vari)
+        print("******************")
     except Exception as e:
         print(e)
     print("############### FIN PAGOS CALLBACK ##################")
