@@ -165,7 +165,7 @@ def pagoscallback():
         jsonUp ={
             "estado": 1
         }
-        vari = OrdenPago.update_data(data["dataJson"]["order"],jsonUp )
+        vari = OrdenPago.update_data_pago(data["dataJson"]["order"],jsonUp )
         print("******************")
         print(vari)
         print("******************")
