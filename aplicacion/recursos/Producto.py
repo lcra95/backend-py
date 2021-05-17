@@ -68,6 +68,7 @@ class ProductoResource(Resource):
                 params = request.form.to_dict()
                 dataJson = params
                 dataJson["imagen"] = imagen.filename
+                dataJson["estado"] = 1
             insert = Producto.insert(dataJson)
             if insert:
                 if 'imagen' in dataJson and dataJson["imagen"]:
