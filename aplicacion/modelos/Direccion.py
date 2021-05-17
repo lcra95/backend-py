@@ -43,13 +43,16 @@ class Direccion(db.Model):
     @classmethod
     def insert(cls, dataJson):
         numero = None
+        id_comuna = None
         if "numero" in dataJson:
             numero = dataJson['numero']
+        if "id_comuna" in dataJson:
+            id_comuna = dataJson['id_comuna']
         query = Direccion( 
             direccion_escrita = dataJson['direccion_escrita'],
             numero = numero,
             departamento = dataJson['departamento'],
-            id_comuna = dataJson['id_comuna'],
+            id_comuna = id_comuna,
             id_tipo_direccion = dataJson['id_tipo_direccion'],
             created_at = func.NOW(),
             updated_at = func.NOW(),
