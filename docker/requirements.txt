@@ -9,7 +9,7 @@ openpyxl
 xlrd
 python-barcode
 pysftp
-Flask
+Flask==1.1.2
 Flask-Script
 Flask-Sqlalchemy
 Flask-Restful

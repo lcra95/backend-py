@@ -26,7 +26,7 @@ from aplicacion.redis import redis
 
 # IMPORTACIÓN DE RECURSOS
 from aplicacion.recursos.TipoDireccion import TipoDireccionResource
-from aplicacion.recursos.Direccion import DireccionResource, GetPlacesResource
+from aplicacion.recursos.Direccion import DireccionResource, GetPlacesResource,GetMatrixResource
 from aplicacion.recursos.PersonaDireccion import PersonaDireccionResource
 from aplicacion.recursos.TipoIngrediente import TipoIngredienteResource
 from aplicacion.recursos.TipoPersona import TipoPersonaResource
@@ -123,6 +123,7 @@ api.add_resource(DireccionResource, '/direccion')
 api.add_resource(SucursalResource, '/sucursal')
 api.add_resource(RangoDeliveryResource, '/rangodelivery')
 api.add_resource(GetPlacesResource,'/getplace')
+api.add_resource(GetMatrixResource,'/matrix')
 
 #usuarios
 api.add_resource(UsuarioResource, '/usuario')
