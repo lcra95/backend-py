@@ -118,6 +118,10 @@
 
 <script>
     function pagar(data){
+        if(!validarEmail()){
+            alert("Su correo es invalido");
+            return;
+        }
         var pago = {
                 "email": $("#correo")[0].value,
                 "order": data.id,
@@ -143,6 +147,17 @@
             console.log("something is wrong");
         })
     }
-
+    function validarEmail() {
+		var valor = $("#correo")[0].value;
+        var correoValido = false
+		var regex = /^(([^<>()[\].,;:\s@"]+(.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+.)+[^<>()[\].,;:\s@"]{2,})$/i;
+		if (regex.test(valor)) {
+			
+			correoValido = true;
+		} else {
+			correoValido = false;
+		}
+        return correoValido;
+	}
     
 </script>
