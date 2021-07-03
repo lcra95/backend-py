@@ -120,6 +120,7 @@
     function pagar(data){
         if(!validarEmail()){
             alert("Su correo es invalido");
+            $("#correo")[0].value = ''
             return;
         }
         var pago = {
