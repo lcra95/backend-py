@@ -47,6 +47,7 @@ from aplicacion.recursos.Repartidor import RepartidorResource
 from aplicacion.recursos.Orden import OrdenResource, OrdenFullResource
 from aplicacion.recursos.OrdenRepartidor import OrdenRepartidorResource
 from aplicacion.recursos.TipoPago import TipoPagoResource
+from aplicacion.recursos.Pago import PagoResource
 from aplicacion.recursos.Sucursal import SucursalResource
 from aplicacion.recursos.OrdenPago import OrdenPagoResource
 from aplicacion.recursos.RangoDelivery import RangoDeliveryResource
@@ -88,6 +89,7 @@ api.add_resource(SearchClienteResource, '/searchcliente')
 api.add_resource(TipoEntregaResource, '/tipoentrega')
 api.add_resource(RepartidorResource, '/repartidor')
 api.add_resource(TipoPagoResource, '/tipopago')
+api.add_resource(PagoResource, '/pagop')
 api.add_resource(OrdenPagoResource, '/ordenpago')
 # api.add_resource(PagoOnLineResource, '/pagoenlinea')
 
@@ -168,6 +170,22 @@ def pagoscallback():
         print(e)
     print("############### FIN PAGOS CALLBACK ##################")
     return data, 200
+@app.route('/linkpago', methods=['GET', 'POST'] )
+def pagoscallback():
+    print("############### PAGOS CALLBACK ##################")
+    from aplicacion.modelos.Pago import Pago
+    data = {}
+    try:
+        data["form_data"] = request.form.to_dict()
+        data["dataJson"] = request.get_json()
+        jsonUp ={
+            "estado": 1
+        }
+        vari = Pago.update_data(data["dataJson"]["order"],jsonUp )
+    except Exception as e:
+        print(e)
+    print("############### FIN PAGOS CALLBACK ##################")
+    return data, 200
 
 @app.route('/imprimir-orden/<int:_id>')
 def imprime(_id):
@@ -182,6 +200,32 @@ def imprime(_id):
     # return info[0]
 
     return render_template("orden.html", data = info)
+@app.route('/pago')
+def setd():
+    from aplicacion.modelos.Pago import Pago
+    parser = reqparse.RequestParser()
+    parser.add_argument('id',
+                            type=str,
+                            required=True,
+                            help="Debe indicar una fecha",
+                            
+                            )
+    
+    data = parser.parse_args() 
+    try:
+        datos = Pago.get_data(data["id"])
+        info = datos[0]
+
+        return render_template("pago.html", data = info)
+            
+
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
 #INICIAMOS LA APLICACIÓN
 app.run(host='0.0.0.0', port=5000, debug=True )
     
