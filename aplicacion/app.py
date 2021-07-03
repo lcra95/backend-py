@@ -171,7 +171,7 @@ def pagoscallback():
     print("############### FIN PAGOS CALLBACK ##################")
     return data, 200
 @app.route('/linkpago', methods=['GET', 'POST'] )
-def pagoscallback():
+def pagoscallback1():
     print("############### PAGOS CALLBACK ##################")
     from aplicacion.modelos.Pago import Pago
     data = {}
