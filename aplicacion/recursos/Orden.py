@@ -82,7 +82,10 @@ class OrdenResource(Resource):
                 "id_tipo_entrega" : dataJson["id_tipo_entrega"],
                 "id_sucursal" : dataJson["id_sucursal"],
                 "id_direccion" : dataJson["id_direccion"],           
-                "hora_salida" : None,           
+                "hora_salida" : None,  
+                "delivery": dataJson["delivery"],
+                "kilometros": dataJson["kilometros"]
+
             }
             insert = Orden.insert(jsonOrden)
             if insert:

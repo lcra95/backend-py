@@ -40,6 +40,10 @@ class OrdenPago(db.Model):
     def get_data(cls, _id):
         query =  cls.query.filter_by(id=_id).first()
         return  Utilidades.obtener_datos(query)
+    @classmethod
+    def get_data_orden(cls, _id):
+        query =  cls.query.filter_by(id_orden=_id).first()
+        return  Utilidades.obtener_datos(query)
 
     @classmethod
     def insert(cls, dataJson):

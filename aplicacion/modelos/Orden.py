@@ -9,6 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.functions import func
 from aplicacion.helpers.utilidades import Utilidades
 from aplicacion.modelos.OrdenDetalle import OrdenDetalle
+from aplicacion.modelos.OrdenPago import OrdenPago
+from aplicacion.modelos.TipoPago import TipoPago
 
 # db = SQLAlchemy()
 
@@ -21,6 +23,7 @@ class Orden(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     id_persona = db.Column(db.String(128), nullable=False)
+    kilometros = db.Column(db.String(128), nullable=True)
     id_tipo_entrega = db.Column(db.Integer, nullable=False)
     id_sucursal = db.Column(db.Integer, nullable=False)
     estado = db.Column(db.Integer, nullable=False)
@@ -30,6 +33,7 @@ class Orden(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     id_direccion = db.Column(db.Integer, nullable=True)
+    delivery = db.Column(db.Integer, nullable=True)
     #CRUD
 
 
@@ -56,6 +60,8 @@ class Orden(db.Model):
             created_at = func.NOW(),
             updated_at = func.NOW(),
             estado = 1,
+            delivery =dataJson['delivery'],
+            kilometros =dataJson['kilometros']
             )
         Orden.guardar(query)
         if query.id:                            
@@ -86,6 +92,8 @@ class Orden(db.Model):
                     query.created_at = dataJson['created_at']         
                 if 'estado' in dataJson:
                     query.estado = dataJson['estado']         
+                if 'delivery' in dataJson:
+                    query.delivery = dataJson['delivery']         
                
                 query.updated_at = func.NOW()
                 db.session.commit()
@@ -113,7 +121,7 @@ class Orden(db.Model):
     @classmethod
     def ordenFullInfo(cls, _id):
         sql =   'SELECT \
-                	p.nombre, p.apellido_paterno, t.numero as telefono,c.nombre as comuna, d.direccion_escrita, td.nombre as tipo, d.numero, d.departamento \
+                	o.kilometros,o.delivery, p.nombre, p.apellido_paterno, t.numero as telefono,c.nombre as comuna, d.direccion_escrita, td.nombre as tipo, d.numero, d.departamento \
                 FROM orden o \
                 JOIN persona p ON p.id = o.id_persona \
                 JOIN telefono t ON t.id_persona = p.id \
@@ -131,11 +139,19 @@ class Orden(db.Model):
                     depto = x.departamento 
                 if x.direccion_escrita  is not None:
                     direccion = str(x.direccion_escrita + ", " + x.tipo + " " + depto ).upper()
+                pago = OrdenPago.get_data_orden(_id)
+                idtp =pago[0]["id_tipo_pago"]
+                tipo_pago = TipoPago.get_data(idtp)
+                pago[0]["tipo_pago"] = tipo_pago[0]["nombre"]
+                print
                 temp = {
                     "nombre": x.nombre + " " + x.apellido_paterno,
                     "telefono": x.telefono,
                     "direccion" : direccion,
-                    "detalle": OrdenDetalle.DetalleByOrden(_id)
+                    "delivery" : x.delivery,
+                    "kilometros" : x.kilometros,
+                    "detalle": OrdenDetalle.DetalleByOrden(_id),
+                    "pago": pago
                 }
                 res.append(temp)
         return  res

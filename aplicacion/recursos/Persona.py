@@ -94,18 +94,22 @@ class PersonaResource(Resource):
                 }
                 corInsert = Correo.insert(jsonEmail)
                 comuna = None
-                if "id_comuna" in dataJson:
-                    comuna = dataJson["id_comuna"]
-                jsonDireccion = {
-                    "id_comuna" : comuna,
-                    "id_tipo_direccion": dataJson["id_tipo_direccion"],
-                    "direccion_escrita": dataJson["direccion"],
-                    "numero": numerod,
-                    "departamento": depto,
-                    "id_place" : dataJson["id_place"]
-                }
-                insertDir = Direccion.insert(jsonDireccion)
-                if insertDir:
+                insertDir = None
+                pdInser = None
+                if "id_place" in dataJson and dataJson["id_place"] != "":
+                    if "id_comuna" in dataJson:
+                        comuna = dataJson["id_comuna"]
+                    jsonDireccion = {
+                        "id_comuna" : comuna,
+                        "id_tipo_direccion": dataJson["id_tipo_direccion"],
+                        "direccion_escrita": dataJson["direccion"],
+                        "numero": numerod,
+                        "departamento": depto,
+                        "id_place" : dataJson["id_place"]
+                    }
+                    insertDir = Direccion.insert(jsonDireccion)
+                
+                if insertDir is not None:
                     jsonDireccionPersona = {
                         "id_persona" : insert,
                         "id_direccion": insertDir
@@ -116,7 +120,7 @@ class PersonaResource(Resource):
 
 
             if dataJson["registro"] == 1:
-                if telInsert is not None and corInsert is not None and pdInser is not None:
+                if telInsert is not None and corInsert is not None:
                     jsonReg = {
                         "id_persona" : insert,
                         "correo":  dataJson["email"],
@@ -127,7 +131,7 @@ class PersonaResource(Resource):
                     user = Persona.personaFullInfo(insert)
                     response = {"estado": 1, "msj": "Bienvenido", "data": user}
             if dataJson["registro"] == 2:
-                if telInsert is not None and corInsert is not None and pdInser is not None:
+                if telInsert is not None and corInsert is not None:
                     jsonReg = {
                         "id_persona" : insert,
                         "nombre":  dataJson["nombre"],
@@ -140,7 +144,7 @@ class PersonaResource(Resource):
                     
                     return { "estado_response" : 0, "msj": "Ha ocurrido un error en el registro" }
             else:
-                if telInsert is not None and corInsert is not None and pdInser is not None:
+                if telInsert is not None and corInsert is not None:
                     user = Persona.personaFullInfo(insert)
                     response = {"estado": 1, "msj": "Bienvenido", "data": user}
                 else:

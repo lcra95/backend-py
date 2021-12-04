@@ -5,6 +5,7 @@ from sqlalchemy import BigInteger, Column, Date, DateTime, Float, Index, Integer
 from sqlalchemy.schema import FetchedValue
 from sqlalchemy.dialects.mysql.types import LONGBLOB
 from sqlalchemy.dialects.mysql.enumerated import ENUM
+from aplicacion.helpers.utilidades import Utilidades
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.functions import func
 
@@ -34,7 +35,7 @@ class TipoPago(db.Model):
     @classmethod
     def get_data(cls, _id):
         query =  cls.query.filter_by(id=_id).first()
-        return query
+        return  Utilidades.obtener_datos(query)
 
     @classmethod
     def insert(cls, dataJson):

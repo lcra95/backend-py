@@ -195,8 +195,8 @@ def imprime(_id):
     for tot in info[0]["detalle"]:
         deff = deff + tot["precio_total"]
     
-    info[0]["total_orden"] = deff
-    
+    info[0]["total_orden"] = deff + info[0]["delivery"]
+    info[0]["paga"] = info[0]["pago"][0]["monto"] + info[0]["pago"][0]["vuelto"]
     # return info[0]
 
     return render_template("orden.html", data = info)
