@@ -116,9 +116,9 @@ class ProductoIngrediente(db.Model):
     @classmethod
     def IngredienteByProducto(cls, id_producto):
         sql =   "SELECT \
-                    distinct(ti.id) as tipo, ti.nombre \
+                    i.id, i.nombre \
                 FROM producto_ingrediente pi \
-                JOIN ingrediente i ON i.id = pi.id_ingrediente \
+                JOIN ingrediente i ON i.id = pi.id_ingrediente and i.estado = 1  \
                 JOIN tipo_ingrediente ti ON ti.id = i.id_tipo_ingrediente \
                 WHERE pi.id_producto = "+ str(id_producto) + " group by ti.id, i.id, i.nombre, ti.nombre"
         
@@ -127,10 +127,10 @@ class ProductoIngrediente(db.Model):
         if query:
             for x in query:
                 temp = {
-
+                    "id": x.id,
                     "nombre": x.nombre,
-                    "tipo" : x.tipo,
-                    "ingrediente" : ProductoIngrediente.ingredienteByTipoAndProducto(id_producto, x.tipo)
+                    # "tipo" : x.tipo,
+                    # "ingrediente" : ProductoIngrediente.ingredienteByTipoAndProducto(id_producto, x.tipo)
                 }
                 result.append(temp)
         
@@ -152,8 +152,7 @@ class ProductoIngrediente(db.Model):
                 temp = {
 
                     "nombre": x.nombre,
-                    "tipo" : x.id,
-                    "checked" : True
+                    "tipo" : x.id
                 }
                 result.append(temp)
         

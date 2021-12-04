@@ -192,8 +192,8 @@ class ProductoFilterResource(Resource):
                         "imagen" : img,
                         "iva" : str(iva[0]['valor']),
                         "fix_iva" :str(fix_iva),
-                        "fix_precio_bruto": str(fix_precio_bruto)
-
+                        "fix_precio_bruto": str(fix_precio_bruto),
+                        "ingredientes" : ProductoIngrediente.IngredienteByProducto(row.id),
                     }
                     
                     menu.append(data)

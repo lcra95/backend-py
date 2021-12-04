@@ -64,6 +64,7 @@ class OrdenResource(Resource):
     def post(self):
         try:
             sin =None
+            eleccion = None
             documento = 39
             fecha_emision = datetime.now()
             id_comprador = None
@@ -91,14 +92,17 @@ class OrdenResource(Resource):
             if insert:
                 for producto in dataJson["detalle"]:
                                        
-                    if 'sin' in producto and producto['sin'] is not None:
-                        sin = producto["sin"]
+                    if 'detalle' in producto and producto['detalle'] is not None:
+                        sin = producto["detalle"]
+                    if 'eleccion' in producto and producto['eleccion'] is not None:
+                        eleccion = producto["eleccion"]
 
                     jsonOrdenDetalle = {
                         "id_orden": insert,
                         "id_producto": producto['id'],
                         "cantidad" : producto['cantidad'],
-                        "detalle" : str(sin),
+                        "detalle" : sin,
+                        "eleccion": eleccion,
                         "precio_unitario" :  producto['precio'],
                         "precio_extendido" :  producto['precio_bruto'],
                         "precio_total" : producto['sub_total'],
@@ -107,13 +111,19 @@ class OrdenResource(Resource):
                     insertDetalle = OrdenDetalle.insert(jsonOrdenDetalle)
                 if "estado" in dataJson["pago"]:
                     estado = dataJson["pago"]['estado']
+
+                if 'vuelto' not in dataJson["pago"] or dataJson["pago"]["vuelto"] is None:
+                    vuelto = 0
+                else:
+                    vuelto = dataJson["pago"]['vuelto']
+
                 jsonOrdenPago = {
                     "id_orden" : insert,
                     "id_tipo_pago" : dataJson["pago"]['id_tipo_pago'],
                     "monto":  dataJson["pago"]['monto'],
                     "voucher" : dataJson["pago"]['voucher'],
                     "comprobante" : dataJson["pago"]['comprobante'],
-                    "vuelto" : dataJson["pago"]['vuelto'],
+                    "vuelto" : vuelto,
                     "estado" : estado
                 }
 

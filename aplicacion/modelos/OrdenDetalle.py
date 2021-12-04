@@ -23,6 +23,7 @@ class OrdenDetalle(db.Model):
     id_orden = db.Column(db.Integer, nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     detalle = db.Column(db.String(128), nullable=False)
+    eleccion = db.Column(db.String(128), nullable=False)
     precio_unitario = db.Column(db.Integer, nullable=False)
     precio_extendido = db.Column(db.Integer, nullable=False)
     precio_iva = db.Column(db.Integer, nullable=False)
@@ -49,6 +50,7 @@ class OrdenDetalle(db.Model):
             id_orden = dataJson['id_orden'],
             cantidad = dataJson['cantidad'],
             detalle = dataJson['detalle'],
+            eleccion = dataJson['eleccion'],
             precio_unitario = dataJson['precio_unitario'],
             precio_extendido = dataJson['precio_extendido'],
             precio_iva = dataJson['precio_iva'],
@@ -75,6 +77,8 @@ class OrdenDetalle(db.Model):
                     query.cantidad = dataJson['cantidad']
                 if 'detalle' in dataJson:
                     query.detalle = dataJson['detalle']
+                if 'eleccion' in dataJson:
+                    query.eleccion = dataJson['eleccion']
                 if 'precio_unitario' in dataJson:
                     query.precio_unitario = dataJson['precio_unitario']
                 if 'precio_extendido' in dataJson:
@@ -115,14 +119,21 @@ class OrdenDetalle(db.Model):
         
         query = db.session.execute(sql)
         result = []
+        choose = ''
+        detalle = ''
         if query:
             for x in query:
+                if x.eleccion is not None:
+                    choose = "- ("+ str(x.eleccion) +")"
+                if x.detalle is not None:
+                    detalle = "- "+ str(x.detalle)
                 temp = {
                     "id": x.id,
                     "id_producto": x.id_producto,
                     "id_orden": x.id_orden,
                     "cantidad" : x.cantidad,
-                    "detalle" : x.detalle,
+                    "detalle" : detalle,
+                    "eleccion": choose,
                     "precio_unitario" : x.precio_unitario,
                     "precio_extendido" : x.precio_extendido,
                     "precio_iva" : x.precio_iva,
