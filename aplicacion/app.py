@@ -44,7 +44,7 @@ from aplicacion.recursos.Correo import CorreoResource
 from aplicacion.recursos.Comuna import ComunaResource, ComunabyprovinciaResource
 from aplicacion.recursos.Provincia import ProvinciaResource
 from aplicacion.recursos.Repartidor import RepartidorResource
-from aplicacion.recursos.Orden import OrdenResource, OrdenFullResource
+from aplicacion.recursos.Orden import OrdenResource, OrdenFullResource,notificaOrdenResourse
 from aplicacion.recursos.OrdenRepartidor import OrdenRepartidorResource
 from aplicacion.recursos.TipoPago import TipoPagoResource
 from aplicacion.recursos.Pago import PagoResource
@@ -138,7 +138,14 @@ api.add_resource(BancoResource, '/banco')
 api.add_resource(ClienteCuentaResource, '/clientecuenta')
 api.add_resource(TipoDocumentoResource, '/tipodocumento')
 api.add_resource(MovimientoResource, '/movimiento')
+
+#telegram
+api.add_resource(notificaOrdenResourse, '/notifica')
+
+
+
 #ROUTES
+
 @app.route('/')
 def index():
     return "Hola =)", 200

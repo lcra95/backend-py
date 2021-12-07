@@ -34,6 +34,7 @@ class Orden(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     id_direccion = db.Column(db.Integer, nullable=True)
     delivery = db.Column(db.Integer, nullable=True)
+    informada= db.Column(db.Integer, nullable=True)
     #CRUD
 
 
@@ -61,7 +62,8 @@ class Orden(db.Model):
             updated_at = func.NOW(),
             estado = 1,
             delivery =dataJson['delivery'],
-            kilometros =dataJson['kilometros']
+            kilometros =dataJson['kilometros'],
+            informada =0
             )
         Orden.guardar(query)
         if query.id:                            
@@ -94,6 +96,8 @@ class Orden(db.Model):
                     query.estado = dataJson['estado']         
                 if 'delivery' in dataJson:
                     query.delivery = dataJson['delivery']         
+                if 'informada' in dataJson:
+                    query.informada = dataJson['informada']         
                
                 query.updated_at = func.NOW()
                 db.session.commit()
@@ -188,6 +192,20 @@ class Orden(db.Model):
                     "numero": x.numero,
                     "correo":  x.correo,
                     "detalle": OrdenDetalle.DetalleByOrden(x.id)
+                }
+                res.append(temp)
+        return  res
+    
+    @classmethod
+    def ordenToNotify(cls):
+        sql =   "SELECT * FROM orden WHERE informada = 0";
+       
+        query = db.session.execute(sql)
+        res = []
+        if query:
+            for x in query:
+                temp = {
+                    "id": x.id,
                 }
                 res.append(temp)
         return  res

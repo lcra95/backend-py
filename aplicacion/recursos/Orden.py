@@ -17,7 +17,7 @@ from aplicacion.modelos.Correo import Correo
 from aplicacion.modelos.Documento import Documento
 from datetime import date, datetime
 from random import random
-
+from aplicacion.telegram import bot
 class OrdenResource(Resource):
 
     def get(self):
@@ -202,6 +202,25 @@ class OrdenFullResource(Resource):
             Info = Orden.ordenFullInfoData(data["id_sucursal"], data["fecha"], data["estado"])
 
             return Info
+        except Exception as e:
+            print(" ## Error ## \n")
+            print(e)
+            print("\n")
+            return {"message": "Ha ocurrido un error de conexión."}, 500      
+class notificaOrdenResourse(Resource):
+    def post(self):
+        try:
+            ordenes = Orden.ordenToNotify()
+            if len(ordenes) > 0:
+                for x in ordenes:
+                    msj ="Hola, tienes una orden pendiente por atender "
+                    msj+="http://rypsystems.cl:5000/imprimir-orden/"+str(x["id"])
+                    bot.send_message(5036077655, msj)
+                    bot.send_message(5090328284, msj)
+
+                    Orden.update_data(x["id"], {"informada": 1})
+                    
+            return ordenes
         except Exception as e:
             print(" ## Error ## \n")
             print(e)
