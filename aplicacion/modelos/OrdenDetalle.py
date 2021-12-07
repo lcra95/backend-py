@@ -119,10 +119,10 @@ class OrdenDetalle(db.Model):
         
         query = db.session.execute(sql)
         result = []
-        choose = ''
-        detalle = ''
         if query:
             for x in query:
+                choose = ''
+                detalle = ''
                 if x.eleccion is not None:
                     choose = "- ("+ str(x.eleccion) +")"
                 if x.detalle is not None:
