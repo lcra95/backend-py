@@ -63,8 +63,7 @@ class OrdenResource(Resource):
 
     def post(self):
         try:
-            sin =None
-            eleccion = None
+
             documento = 39
             fecha_emision = datetime.now()
             id_comprador = None
@@ -91,7 +90,8 @@ class OrdenResource(Resource):
             insert = Orden.insert(jsonOrden)
             if insert:
                 for producto in dataJson["detalle"]:
-                                       
+                    sin =None
+                    eleccion = None            
                     if 'detalle' in producto and producto['detalle'] is not None:
                         sin = producto["detalle"]
                     if 'eleccion' in producto and producto['eleccion'] is not None:
