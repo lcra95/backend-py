@@ -136,6 +136,7 @@ class Orden(db.Model):
         query = db.session.execute(sql)
         res = []
         if query:
+            apellido = ''
             depto = ''
             direccion = ''
             for x in query:
@@ -147,9 +148,10 @@ class Orden(db.Model):
                 idtp =pago[0]["id_tipo_pago"]
                 tipo_pago = TipoPago.get_data(idtp)
                 pago[0]["tipo_pago"] = tipo_pago[0]["nombre"]
-                print
+                if x.apellido_paterno is not None:
+                    apellido = x.apellido_paterno
                 temp = {
-                    "nombre": x.nombre + " " + x.apellido_paterno,
+                    "nombre": x.nombre + " " + str(apellido),
                     "telefono": x.telefono,
                     "direccion" : direccion,
                     "delivery" : x.delivery,
