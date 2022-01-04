@@ -35,7 +35,7 @@ class Producto(db.Model):
 
     @classmethod
     def getAll(cls):
-        query =  cls.query.order_by(Producto.id_tipo_producto.asc()).all()
+        query =  cls.query.order_by(Producto.id_tipo_producto.asc()).filter_by(estado = 1).all()
         return query
 
     @classmethod

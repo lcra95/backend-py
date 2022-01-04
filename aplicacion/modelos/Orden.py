@@ -169,13 +169,14 @@ class Orden(db.Model):
                     date_format(o.created_at, '%H:%I:%S') as hora, o.id, \
                     concat(p.nombre,' ', p.apellido_paterno) as nombre, te.nombre as tipo_entrega, \
                     concat(d.direccion_escrita, ' ', d.numero, ' ',d.departamento ) as direccion, \
-                    t.numero, c.direccion as correo \
+                    t.numero, c.direccion as correo, op.id_tipo_pago, op.estado as pagado \
                 FROM orden o \
                 JOIN persona p on p.id = o.id_persona \
                 LEFT JOIN direccion d ON d.id = o.id_direccion \
                 JOIN tipo_entrega te ON te.id = o.id_tipo_entrega \
                 JOIN telefono t ON t.id_persona = o.id_persona \
                 JOIN correo c ON c.id_persona = o.id_persona \
+                JOIN orden_pago op ON op.id_orden = o.id \
                 WHERE o.id_sucursal = " + str(_sucursal) + " and o.estado = " + str(estado) + " and date_format(o.created_at, '%d-%m-%Y') = '"+ str(_fecha) +"'  \
                 ORDER BY o.id ASC"
        
@@ -193,6 +194,8 @@ class Orden(db.Model):
                     "tipo_entrega" : x.tipo_entrega,
                     "numero": x.numero,
                     "correo":  x.correo,
+                    "tipo_pago" : x.id_tipo_pago,
+                    "pagado" : x.pagado,
                     "detalle": OrdenDetalle.DetalleByOrden(x.id)
                 }
                 res.append(temp)
