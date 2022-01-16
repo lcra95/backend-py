@@ -112,6 +112,9 @@ class OrdenResource(Resource):
                 if "estado" in dataJson["pago"]:
                     estado = dataJson["pago"]['estado']
 
+                if dataJson["pago"]['id_tipo_pago'] == 1 or dataJson["pago"]['id_tipo_pago'] == "1":
+                    estado = 3
+
                 if 'vuelto' not in dataJson["pago"] or dataJson["pago"]["vuelto"] is None:
                     vuelto = 0
                 else:
