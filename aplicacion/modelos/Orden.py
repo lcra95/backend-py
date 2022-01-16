@@ -5,6 +5,7 @@ from sqlalchemy import BigInteger, Column, Date, DateTime, Float, Index, Integer
 from sqlalchemy.schema import FetchedValue
 from sqlalchemy.dialects.mysql.types import LONGBLOB
 from sqlalchemy.dialects.mysql.enumerated import ENUM
+from aplicacion.modelos.Correo import Correo
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.functions import func
 from aplicacion.helpers.utilidades import Utilidades
@@ -125,7 +126,7 @@ class Orden(db.Model):
     @classmethod
     def ordenFullInfo(cls, _id):
         sql =   'SELECT \
-                	o.kilometros,o.delivery, p.nombre, p.apellido_paterno, t.numero as telefono,c.nombre as comuna, d.direccion_escrita, td.nombre as tipo, d.numero, d.departamento \
+                	p.id, o.kilometros,o.delivery, p.nombre, p.apellido_paterno, t.numero as telefono,c.nombre as comuna, d.direccion_escrita, td.nombre as tipo, d.numero, d.departamento \
                 FROM orden o \
                 JOIN persona p ON p.id = o.id_persona \
                 JOIN telefono t ON t.id_persona = p.id \
@@ -148,10 +149,13 @@ class Orden(db.Model):
                 idtp =pago[0]["id_tipo_pago"]
                 tipo_pago = TipoPago.get_data(idtp)
                 pago[0]["tipo_pago"] = tipo_pago[0]["nombre"]
+                correo = Correo.get_data_by_persona(x.id)
+                mail = correo[0]["direccion"]
                 if x.apellido_paterno is not None:
                     apellido = x.apellido_paterno
                 temp = {
                     "nombre": x.nombre + " " + str(apellido),
+                    "correo": mail,
                     "telefono": x.telefono,
                     "direccion" : direccion,
                     "delivery" : x.delivery,
@@ -203,8 +207,7 @@ class Orden(db.Model):
     
     @classmethod
     def ordenToNotify(cls):
-        sql =   "SELECT * FROM orden WHERE informada = 0";
-       
+        sql =   "SELECT * FROM orden o JOIN orden_pago op on o.id = op.id_orden and op.estado in(1,3) WHERE o.informada  = 0"
         query = db.session.execute(sql)
         res = []
         if query:
