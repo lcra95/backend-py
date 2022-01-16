@@ -207,7 +207,7 @@ class Orden(db.Model):
     
     @classmethod
     def ordenToNotify(cls):
-        sql =   "SELECT * FROM orden o JOIN orden_pago op on o.id = op.id_orden and op.estado in(1,3) WHERE o.informada  = 0"
+        sql =   "SELECT o.id FROM orden o JOIN orden_pago op on o.id = op.id_orden and op.estado in(1,3) WHERE o.informada  = 0"
         query = db.session.execute(sql)
         res = []
         if query:
