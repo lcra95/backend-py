@@ -296,7 +296,7 @@ def webpay():
                     "order": data["order"],
                     "session": datetime.now().timestamp(),
                     "amount": monto,
-                    "url_return": "http://mochima-burger.cl/webpayresponse?token="+str(token)
+                    "url_return": "http://rypsystems.cl:5000/webpayresponse?token="+str(token)
             }     
             
             result = transbank.crearToken(body)
