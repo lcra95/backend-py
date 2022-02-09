@@ -18,7 +18,7 @@ baseUrl = "https://webpay3g.transbank.cl" #PROD
 class transbank():
     @staticmethod
     def credenciales():
-        Prod
+        # Prod
         credenciales = {
             "Tbk-Api-Key-Id":"597043648829",
             "Tbk-Api-Key-Secret": "73726a87661cb3b6d8e1663c19a2cd9c"
