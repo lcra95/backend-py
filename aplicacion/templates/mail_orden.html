@@ -1,0 +1,98 @@
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f5f7fa">
+    <tbody cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td align="center" valign="top">
+                <table cellspacing="0" cellpadding="0" border="0" style="max-width: 100%; padding: 3%; background:white;">
+                    <tbody cellspacing="0" cellpadding="0" border="0">
+                        <tr>
+                            <td align="center" style="text-align: center;">
+                               
+                                <p style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+                                    Estimada (o) {{data[0].nombre}}.
+                                </p>
+                                <p style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+                                    Junto con agradecer su preferencia,
+                                    le informamos que su orden <b>{{data[0].pago[0].id_orden}}</b> ha sido recepcionada
+                                </p>
+
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid rgba(0,0,0,.1); padding: 0; text-transform: uppercase;">
+                                <h3>Datos de la orden</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h4 style="margin-bottom: 10px; margin-top: 10px;text-transform: capitalize;">
+                                    {{data[0].nombre}} <br>
+                                    {{data[0].telefono}}<br>
+                                    {{data[0].correo}}
+                                </h4>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid rgba(0,0,0,.1); padding: 0; text-transform: uppercase;">
+                                <h3>Productos </h3>
+                            </td>
+                        </tr>
+                        {% for n in data[0].detalle %}
+                            <tr>
+                                <td>
+                                    <label style="margin-bottom: 10px; margin-top: 10px;"> 
+                                        {{n.cantidad}} x {{n.data_producto[0].nombre}} : {{n.precio_total}}
+                                    </label>
+                                </td>
+                            </tr>
+                        {%endfor%}
+                        <tr>
+                            <td>
+                                <br>
+
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td>
+                                            <table width="100%" style="background: #fff9da; padding: 10px;"												cellspacing="0" cellpadding="0" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="color:#d2a624;">Entrega :</td>
+                                                        {%if data[0].delivery > 0%}
+                                                            <td style="color: #616161;"><b>Delivery</b></td>
+                                                        {%else%}
+                                                            <td style="color: #616161;"><b>Retiro en local</b></td>
+                                                        {%endif%}
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="color:#d2a624;">Pago</td>
+                                                        <td style="color: #616161;"><b>{{data[0].pago[0].tipo_pago}}</b></td>
+                                                    </tr>
+                                                    {%if data[0].delivery > 0%}                                                            
+                                                        <tr>
+                                                            <td style="color:#d2a624;">Direccion :</td>
+                                                            <td style="color: #616161;"><b>{{data[0].direccion}}</b></td>
+                                                        </tr>
+                                                    {%endif%}
+                                                </tbody>
+                                            </table>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3"> <br><br> </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -50,11 +50,63 @@ class MovimientoResource(Resource):
         try:
            
             dataJson = request.get_json()
+            d1 = dataJson
+            if "tipo_egreso" in dataJson and  dataJson["tipo_egreso"] is not None and dataJson["id_tipo_movimiento"] == "2":
+                
+                if dataJson["tipo_egreso"] == "1":
+                    valor = Movimiento.insert(dataJson)                    
+                    if valor:
+                       return {"estado": 1, "msj": "registro Exitoso"}
+                
+                elif dataJson["tipo_egreso"] == "2":
+                    ins1 = {
+                        "fecha" :dataJson["fecha"],
+                        "monto" :dataJson["monto"] * 0.3,
+                        "id_centro_costo" :dataJson["id_centro_costo"],
+                        "id_tipo_movimiento" :dataJson["id_tipo_movimiento"],
+                        "concepto" :dataJson["concepto"],
+                    }                    
+                    ins2 = {
+                        "fecha" :dataJson["fecha"],
+                        "monto" :dataJson["monto"] * 0.7,
+                        "id_centro_costo" : 7 ,
+                        "id_tipo_movimiento" :dataJson["id_tipo_movimiento"],
+                        "concepto" :dataJson["concepto"],
+                    }                    
 
-            valor = Movimiento.insert(dataJson)                    
-            if valor:
-                return {"estado": 1, "msj": "registro Exitoso"}
+                    valor = Movimiento.insert(ins1)                    
+                    valor1 = Movimiento.insert(ins2)                    
+                    if valor1:
+                       return {"estado": 1, "msj": "registro Exitoso"}
 
+                elif dataJson["tipo_egreso"] == "3":
+                    ins1 = {
+                        "fecha" :dataJson["fecha"],
+                        "monto" :dataJson["monto"] * 0.5,
+                        "id_centro_costo" :dataJson["id_centro_costo"],
+                        "id_tipo_movimiento" :dataJson["id_tipo_movimiento"],
+                        "concepto" :dataJson["concepto"],
+                    }                    
+                    ins2 = {
+                        "fecha" :dataJson["fecha"],
+                        "monto" :dataJson["monto"] * 0.5,
+                        "id_centro_costo" : 7 ,
+                        "id_tipo_movimiento" :dataJson["id_tipo_movimiento"],
+                        "concepto" :dataJson["concepto"],
+                    } 
+                    valor = Movimiento.insert(ins1)                    
+                    valor1 = Movimiento.insert(ins2)                    
+                    if valor1:
+                       return {"estado": 1, "msj": "registro Exitoso"}       
+            
+            else:
+                valor = Movimiento.insert(dataJson)                    
+                if valor:
+                    return {"estado": 1, "msj": "registro Exitoso"}
+
+        
+        
+        
             return {"estado" : 0, "msj": "Ha ocurrido un error"}
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()

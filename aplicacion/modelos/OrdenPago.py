@@ -28,6 +28,8 @@ class OrdenPago(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     vuelto = db.Column(db.Integer, nullable=False)
     estado = db.Column(db.Integer, nullable=False)
+    url_redirect = db.Column(db.String(128), nullable=True)
+    tb_token = db.Column(db.String(128), nullable=True)
     #CRUD
 
 
@@ -57,6 +59,9 @@ class OrdenPago(db.Model):
             updated_at = func.NOW(),
             vuelto = dataJson['vuelto'],
             estado = dataJson['estado'],
+            url_redirect = None,
+            tb_token = None,
+            
             )
         OrdenPago.guardar(query)
         if query.id:                            
@@ -85,6 +90,10 @@ class OrdenPago(db.Model):
                     query.estado = dataJson['estado']         
                 if 'vuelto' in dataJson:
                     query.vuelto = dataJson['vuelto']         
+                if 'url_redirect' in dataJson:
+                    query.url_redirect = dataJson['url_redirect']         
+                if 'tb_token' in dataJson:
+                    query.tb_token = dataJson['tb_token']         
                
                 query.updated_at = func.NOW()
                 db.session.commit()
@@ -98,6 +107,48 @@ class OrdenPago(db.Model):
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
             return {'mensaje': str(msj) }, 500
+
+    @classmethod
+    def update_data_by_orden(cls, _id, dataJson):
+        try:
+            db.session.rollback()
+            query = cls.query.filter_by(id_orden=_id).first()
+            if query:
+                if 'id_tipo_pago' in dataJson:
+                    query.id_tipo_pago = dataJson['id_tipo_pago']
+                if 'id_orden' in dataJson:
+                    query.id_orden = dataJson['id_orden']
+                if 'monto' in dataJson:
+                    query.monto = dataJson['monto']
+                if 'voucher' in dataJson:
+                    query.vouvher = dataJson['voucher']
+                if 'comprobante' in dataJson:
+                    query.comprobante = dataJson['comprobante']
+                if 'created_at' in dataJson:
+                    query.created_at = dataJson['created_at']         
+                if 'estado' in dataJson:
+                    query.estado = dataJson['estado']         
+                if 'vuelto' in dataJson:
+                    query.vuelto = dataJson['vuelto']         
+                if 'url_redirect' in dataJson:
+                    query.url_redirect = dataJson['url_redirect']         
+                if 'tb_token' in dataJson:
+                    query.tb_token = dataJson['tb_token']         
+               
+                query.updated_at = func.NOW()
+                db.session.commit()
+                if query.id:                            
+                    return query.id
+            return  None
+        except Exception as e:
+            print("=======================E")
+            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {'mensaje': str(msj) }, 500
+
+
 
 
 

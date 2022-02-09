@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 #Se establece enviroment como argumento importado
+import re
 from aplicacion.enviroment import env
+from aplicacion.helpers.utilidades import Utilidades
 enviroment = env
 
 import sys,os,click,json
@@ -18,11 +20,11 @@ from flask_restful import Api, Resource, reqparse
 from flask_mail import Mail
 from ftplib import FTP
 # from flask_analytics import Analytics
-
+from datetime import date, datetime
 from aplicacion.config import app_config
 from aplicacion.db import db
 from aplicacion.redis import redis
-
+import random
 
 # IMPORTACIÓN DE RECURSOS
 from aplicacion.recursos.TipoDireccion import TipoDireccionResource
@@ -149,6 +151,22 @@ api.add_resource(notificaOrdenResourse, '/notifica')
 @app.route('/')
 def index():
     return "Hola =)", 200
+
+@app.route('/mailing/orden/<int:_id>')
+def mailing(_id):
+    from aplicacion.modelos.Orden import Orden
+    info = Orden.ordenFullInfo(_id)
+    deff = 0
+    for tot in info[0]["detalle"]:
+        deff = deff + tot["precio_total"]
+    
+    info[0]["total_orden"] = deff + info[0]["delivery"]
+    info[0]["paga"] = info[0]["pago"][0]["monto"] + info[0]["pago"][0]["vuelto"]
+    # return info[0]
+    body = render_template("mail_orden.html", data = info)
+    mail = Utilidades.send_mail(info[0]["correo"], 'Orden ' + str(_id), body)
+    return info[0]
+
 @app.route('/imagen/<path:path>')
 def getimagen(path):
     from aplicacion.modelos.ProductoImagen import ProductoImagen  
@@ -222,10 +240,164 @@ def setd():
     try:
         datos = Pago.get_data(data["id"])
         info = datos[0]
-
         return render_template("pago.html", data = info)
             
 
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
+@app.route('/webpay',methods=['POST', 'GET'])
+def webpay():
+    from aplicacion.helpers.transbank import transbank
+    from aplicacion.modelos.Orden import Orden
+    from aplicacion.modelos.OrdenPago import OrdenPago
+    try:
+
+        if request.method == 'GET':
+            
+            parser = reqparse.RequestParser()
+            parser.add_argument('token',
+                                type=str,
+                                required=True,
+                                help="Debe indicar una atención"
+                                )
+            # parser.add_argument('amount',
+            #                     type=str,
+            #                     required=True,
+            #                     help="Debe indicar una atención"
+            #                     )
+            # parser.add_argument('order',
+            #                     type=str,
+            #                     required=True,
+            #                     help="Debe indicar una atención"
+            #                     )
+            data = parser.parse_args()
+            token = data["token"]
+            data = base64.b64decode(data["token"])
+            data = json.loads(data)
+            infoOrden = Orden.ordenFullInfo(data["order"])
+            if len(infoOrden) == 0:
+                return {
+                    "estado" : 0,
+                    "msj" : "La orden que desea pagar no esta registrada"
+                }
+            deff = 0
+            for tot in infoOrden[0]["detalle"]:
+                deff = deff + tot["precio_total"]
+            
+            infoOrden[0]["total_orden"] = deff + infoOrden[0]["delivery"]
+            monto = infoOrden[0]["total_orden"]
+
+            body = {
+                    "order": data["order"],
+                    "session": datetime.now().timestamp(),
+                    "amount": monto,
+                    "url_return": "http://mochima-burger.cl/webpayresponse?token="+str(token)
+            }     
+            
+            result = transbank.crearToken(body)
+            upOp = {
+                "url_redirect" : data["url_return"],
+                "tb_token": result["token"]
+            }
+            OrdenPago.update_data_by_orden(data["order"], upOp)
+            result["method"] = "POST"
+            return render_template('redirect.html', data = result)
+        if request.method == 'POST':
+            dataJson = request.get_json()
+            token = json.dumps(dataJson).encode('utf-8')
+            token = base64.b64encode(token)
+            token =str(token).replace("b'", "")
+            token = token.replace("'", "")
+            return {"token": token}
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return msj
+@app.route('/webpayresponse',methods=['POST', 'GET'])
+def webpay1():
+    from aplicacion.helpers.transbank import transbank
+    from aplicacion.modelos.OrdenPago import OrdenPago
+    try:
+        if request.method == 'GET':
+            parser = reqparse.RequestParser()
+            parser.add_argument('token_ws',
+                                type=str,
+                                required=False,
+                                help="Debe indicar una atención"
+                                )
+            parser.add_argument('TBK_ORDEN_COMPRA',
+                                type=str,
+                                required=False,
+                                help="Debe indicar una atención"
+                                )
+            parser.add_argument('TBK_ID_SESION',
+                                type=str,
+                                required=False,
+                                help="Debe indicar una atención"
+                                )
+            parser.add_argument('token',
+                                type=str,
+                                required=False,
+                                help="Debe indicar una atención"
+                                )
+            data = parser.parse_args()
+            nInfo = base64.b64decode(data["token"])
+            nInfo = json.loads(nInfo)
+            url =nInfo["url_return"]
+            info = transbank.commitTransaccion(data["token_ws"])
+
+            if "status" in info and info["status"] == 'AUTHORIZED':
+                jsonUp ={
+                    "estado": 1
+                }
+                vari = OrdenPago.update_data_pago(info["buy_order"],jsonUp )
+                result = {
+                    "url": url + "?id_orden="+str(info["buy_order"]),
+                    "token_ws": info["buy_order"],
+                    "method": "GET"
+                }
+                try:
+                    urlMail = 'http://localhost:5000/mailing/orden/' + str(info["buy_order"])
+                    r = requests.get(urlMail)
+                    print(r.json())
+                except Exception as e:
+                    print(e)
+            else:
+                result = {
+                    "url": url + "?error=1&id_orden="+str(nInfo["order"]),
+                    "method": "GET"
+                }
+            
+            return render_template('redirect.html', data = result)
+            return info
+        
+        if request.method == 'POST':
+            parser = reqparse.RequestParser()
+            parser.add_argument('token',
+                                type=str,
+                                required=False,
+                                help="Debe indicar una atención"
+                                )
+            datos = parser.parse_args()
+            nInfo = base64.b64decode(datos["token"])
+            nInfo = json.loads(nInfo)
+            url =nInfo["url_return"]
+            data = request.form.to_dict()
+            result = {
+                "url": url + "?error=1&id_orden="+str(data["TBK_ORDEN_COMPRA"]),
+                "token_ws": data["TBK_ORDEN_COMPRA"],
+                "method": "GET"
+            }
+            return render_template('redirect.html', data = result)
+            return data
     except Exception as e:
         print("=======================E")
         print(e)
