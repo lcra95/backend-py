@@ -165,7 +165,7 @@ def mailing(_id):
     info[0]["paga"] = info[0]["pago"][0]["monto"] + info[0]["pago"][0]["vuelto"]
     # return info[0]
     body = render_template("mail_orden.html", data = info)
-    mail = Sender.send_mail("requenalc@gmail.com", 'Orden ' + str(_id), body)
+    mail = Sender.send_mail(info[0]["correo"], 'Orden ' + str(_id), body)
     print("------------------")
     print(mail)
     print("------------------")
