@@ -133,11 +133,9 @@ class Utilidades():
             #              "VMtZGQgHXaCzJh1r")
             # rs = server.sendmail("requenalc@gmail.com",
             #                      email_destino, msg.as_string().encode("utf8"))
-            server = smtplib.SMTP('smtp.sendgrid.net', 587)  # 587 - 25
-            server.login("apikey",
-                         "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")
-            rs = server.sendmail("requenalc@gmail.com",
-                                 email_destino, msg.as_string().encode("utf8"))
+            server = smtplib.SMTP('smtp-relay.sendinblue.com', 587)  # 587 - 25
+            server.login("requenalc@gmail.com", "VMtZGQgHXaCzJh1r")
+            rs = server.sendmail("requenalc@gmail.com", email_destino, msg.as_string().encode("utf8"))
 
             server.quit()
 
