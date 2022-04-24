@@ -5,6 +5,7 @@
 import re
 from aplicacion.enviroment import env
 from aplicacion.helpers.utilidades import Utilidades
+from aplicacion.helpers.sender import Sender
 enviroment = env
 
 import sys,os,click,json
@@ -164,8 +165,11 @@ def mailing(_id):
     info[0]["paga"] = info[0]["pago"][0]["monto"] + info[0]["pago"][0]["vuelto"]
     # return info[0]
     body = render_template("mail_orden.html", data = info)
-    mail = Utilidades.send_mail(info[0]["correo"], 'Orden ' + str(_id), body)
-    return info[0]
+    mail = Sender.send_mail("requenalc@gmail.com", 'Orden ' + str(_id), body)
+    print("------------------")
+    print(mail)
+    print("------------------")
+    return "mail"
 
 @app.route('/imagen/<path:path>')
 def getimagen(path):
