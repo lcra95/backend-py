@@ -217,7 +217,7 @@ class notificaOrdenResourse(Resource):
             if len(ordenes) > 0:
                 for x in ordenes:
                     msj ="Hola, tienes una orden pendiente por atender "
-                    msj+="https://rypsystems.cl/imprimir-orden/"+str(x["id"])+"?api_key=8IRyGshe0S0yLe96ZFXTO9uLNsaTH8vD5Kw0YCsU"
+                    msj+="https://rypsystems.cl/imprimir-orden/"+str(x["id"])+"?api_key=tPWoZWD8v3ezld1yomtesvGRCKqtoDAgHGWYVL2O"
                     bot.send_message(5036077655, msj)
                     bot.send_message(5090328284, msj)
 
