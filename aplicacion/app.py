@@ -254,6 +254,64 @@ def setd():
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
         return {'mensaje': str(msj) }, 500
+@app.route('/cryptodaily')
+def crypto():
+    from aplicacion.telegram import bot
+    from aplicacion.helpers.crypto import CryptoMarcket
+    try: 
+        capital = 354485
+        compra = "NO"
+        info = CryptoMarcket.rateCryto()
+        if 'BNB' in info:
+            binance = float(info["BNB"]["price"])
+            print(type(binance))
+            binance = binance * 0.30766501
+        if 'ETH' in info:
+            ethe = float(info["ETH"]["price"])
+            ethe = ethe * 0.13563866
+        if 'BTC' in info:
+            bitc = float(info["BTC"]["price"])
+            bitc = bitc * 0.00297334
+        if 'SOL' in info:
+            sol = float(info["SOL"]["price"])
+            sol = sol * 0.46600853
+
+        total = round( ethe + bitc + sol + binance)
+        if (capital - total ) > 7500:
+            compra = "******* SI ******"
+        
+        # bot.send_message(5036077655, msj)
+        msj = f"""  ********************************
+        BTC => {bitc}
+        ETH => {ethe}
+        SOL => {sol}
+        BNB => {binance}
+        -------------------------------
+        CAPITAL => {capital}
+        TOTAL => {total}
+        DIFF => {capital - total}
+        COMPRAR => { compra }
+        -------------------------------
+        ********************************
+        """
+        bot.send_message(5090328284, msj)
+        return {
+            "ETH" : ethe,
+            "BTC" : bitc,
+            "SOL" : sol,
+            "BNB" : binance,
+            "TOTAL" :round( ethe + bitc + sol + binance),
+            "COMPRA" : compra
+        }
+            
+
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
 @app.route('/webpay',methods=['POST', 'GET'])
 def webpay():
     from aplicacion.helpers.transbank import transbank
