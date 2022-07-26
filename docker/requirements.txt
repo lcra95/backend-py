@@ -58,3 +58,4 @@ WSGIserver
 cryptography==2.3
 pyTelegramBotAPI
 sendgrid
+cryptomarket

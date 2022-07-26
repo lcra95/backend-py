@@ -259,50 +259,27 @@ def crypto():
     from aplicacion.telegram import bot
     from aplicacion.helpers.crypto import CryptoMarcket
     try: 
-        capital = 354485
-        compra = "NO"
-        info = CryptoMarcket.rateCryto()
-        if 'BNB' in info:
-            binance = float(info["BNB"]["price"])
-            print(type(binance))
-            binance = binance * 0.30766501
-        if 'ETH' in info:
-            ethe = float(info["ETH"]["price"])
-            ethe = ethe * 0.13563866
-        if 'BTC' in info:
-            bitc = float(info["BTC"]["price"])
-            bitc = bitc * 0.00297334
-        if 'SOL' in info:
-            sol = float(info["SOL"]["price"])
-            sol = sol * 0.46600853
+        ultimoMoviemiento = 'COMPRA'
+        capital = 345390
+        cu = CryptoMarcket.rateCryto()
+        arr = {}
+        msj1 = '---------------*******---------------\n'
+        for x in cu["balance"]:
+            if 'CLP' in x:
+                arr[x["currency"]] = x["CLP"]
+                msj1 += f'{x["currency"]} => {x["CLP"]}\n'
+        msj1 += '---------------*******---------------\n'
+        msj1 += f"CAP => {capital} \n"
+        msj1 += f"BAL => {cu['Total_CLP']} \n"
+        if capital - cu["Total_CLP"] > 7500 and ultimoMoviemiento == 'VENTA':
+            msj1+= f"""Compra diferencia {capital - cu['Total_CLP']}"""
+            bot.send_message(5090328284, msj1)
+        if  cu["Total_CLP"] - capital  > 7500 and ultimoMoviemiento == 'COMPRA':
+            msj1 = f"Vende diferencia {cu['Total_CLP'] - capital}"
+            bot.send_message(5090328284, msj1)
 
-        total = round( ethe + bitc + sol + binance)
-        if (capital - total ) > 7500:
-            compra = "******* SI ******"
-        
-        # bot.send_message(5036077655, msj)
-        msj = f"""  ********************************
-        BTC => {bitc}
-        ETH => {ethe}
-        SOL => {sol}
-        BNB => {binance}
-        -------------------------------
-        CAPITAL => {capital}
-        TOTAL => {total}
-        DIFF => {capital - total}
-        COMPRAR => { compra }
-        -------------------------------
-        ********************************
-        """
-        bot.send_message(5090328284, msj)
-        return {
-            "ETH" : ethe,
-            "BTC" : bitc,
-            "SOL" : sol,
-            "BNB" : binance,
-            "TOTAL" :round( ethe + bitc + sol + binance),
-            "COMPRA" : compra
-        }
+        return {"balance" : arr, "total" : cu["Total_CLP"]}
+
             
 
     except Exception as e:
