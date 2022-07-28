@@ -259,7 +259,7 @@ def crypto():
     from aplicacion.telegram import bot
     from aplicacion.helpers.crypto import CryptoMarcket
     try: 
-        ultimoMoviemiento = 'COMPRA'
+        ultimoMoviemiento = 'VENTA'
         capital = 345390
         cu = CryptoMarcket.rateCryto()
         arr = {}
@@ -278,7 +278,7 @@ def crypto():
             msj1 = f"Vende diferencia {cu['Total_CLP'] - capital}"
             bot.send_message(5090328284, msj1)
 
-        return {"balance" : arr, "total" : cu["Total_CLP"]}
+        return {"balance" : arr, "total" : cu["Total_CLP"], "venta": cu["Total_CLP"] - capital, "compra" : capital - cu["Total_CLP"], "capital" : capital}
 
             
 
@@ -289,6 +289,35 @@ def crypto():
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
         return {'mensaje': str(msj) }, 500
+@app.route('/cryptosell')
+def crypto2():
+    from aplicacion.telegram import bot
+    from aplicacion.helpers.crypto import CryptoMarcket
+    try: 
+        seller = []
+        balance = CryptoMarcket.account_balance() 
+        # for x in balance:
+        #     if x["currency"] == 'SOL':
+        #         symbol = 'SOLETH'
+        #         monto = 0.01008589
+        #     if x["currency"] == 'BNB':
+        #         symbol = 'BNBETH'
+        #         monto = 0.00417476
+        #     # sell = CryptoMarcket.order(symbol, 'sell', monto  )
+        #     # seller.append(sell)
+        return {"balance":balance}
+
+        
+    
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
+            
+
 @app.route('/webpay',methods=['POST', 'GET'])
 def webpay():
     from aplicacion.helpers.transbank import transbank

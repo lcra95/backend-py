@@ -32,10 +32,38 @@ class CryptoMarcket():
         return client
     
     @staticmethod
+    def balance_compra():
+        bal = [
+            {
+                "available": "0.135618561611",
+                "currency": "ETH",
+                "reserved": "0"
+            },
+            {
+                "available": "0.30417476",
+                "currency": "BNB",
+                "reserved": "0"
+            },
+            {
+                "available": "0.46008589",
+                "currency": "SOL",
+                "reserved": "0"
+            },
+            {
+                "available": "0.00294011",
+                "currency": "BTC",
+                "reserved": "0"
+            }
+	    ]
+        return bal
+
+    @staticmethod
     def rateCryto():
         junta = ","
         currencies = ''
-        balance = CryptoMarcket.account_balance()
+        # balance = CryptoMarcket.account_balance()
+        balance = CryptoMarcket.balance_compra()
+        
         arr = []
         for x in balance:
             if x["currency"] != 'CLP':
@@ -68,44 +96,61 @@ class CryptoMarcket():
     @staticmethod
     def trading_balance():
         cliente = CryptoMarcket.credenciales()
+        account_balance = cliente.get_trading_balance()
+        temp = []
+        for x in account_balance:
+                # cliente.transfer_money_from_bank_balance_to_trading_balance(x["currency"],x["available"])
+                temp.append(x)
+        
+        return temp
+    @staticmethod
+    def transfer_trading_balance_to_bank():
+        cliente = CryptoMarcket.credenciales()
         trading_balance = cliente.get_trading_balance()
         temp = []
         for x in trading_balance:
-            if float(x["available"]) > 0:
-                cliente.transfer_money_from_trading_balance_to_bank_balance(x["currency"],x["available"])
-                temp.append(x)
+            if x["currency"] != 'CLP':
+                if float(x["available"]) > 0:
+                    cliente.transfer_money_from_trading_balance_to_bank_balance(x["currency"],x["available"])
+                    temp.append(x)
         
-        return { "balance" : temp}
+        return  temp
+    @staticmethod
+    def transfer_bank_to_trading_balance():
+        cliente = CryptoMarcket.credenciales()
+        trading_balance = cliente.get_account_balance()
+        temp = []
+        for x in trading_balance:
+            if x["currency"] != 'CLP':
+                if float(x["available"]) > 0:
+                    cliente.transfer_money_from_bank_balance_to_trading_balance(x["currency"],x["available"])
+                    temp.append(x)
+        
+        return temp
     @staticmethod
     def currencies():
         cliente = CryptoMarcket.credenciales()
         currencies = cliente.get_currencies()
-
-        
-        return { "currencies" :currencies}
+        return { "result" :currencies}
     @staticmethod
-    def order():
+    def symbols():
         cliente = CryptoMarcket.credenciales()
-        currencies = cliente.create_order('ETHCLP', 'buy', '0.0017201', order_type=args.ORDER_TYPE.MARKET)
-
-        
-
-        return { "currencies" :currencies}
+        symbols = cliente.get_symbols()
+        return { "result" :symbols}
+    @staticmethod
+    def order(symbol, side, qty):
+        cliente = CryptoMarcket.credenciales()
+        order = cliente.create_order(symbol, side, str(qty), order_type=args.ORDER_TYPE.MARKET)
+        return order
     
     @staticmethod
     def banktoExchange():
         cliente = CryptoMarcket.credenciales()
-        currencies = cliente.transfer_money_from_bank_balance_to_trading_balance('CLP', '3000')
-
-        
-
-        return { "currencies" :currencies}
+        bte = cliente.transfer_money_from_bank_balance_to_trading_balance('CLP', '3000')
+        return { "result" :bte}
     @staticmethod
     def exchangetoBank():
         cliente = CryptoMarcket.credenciales()
-        currencies = cliente.transfer_money_from_trading_balance_to_bank_balance('CLP', '2360')
-
-        
-
-        return { "currencies" :currencies}
+        etb = cliente.transfer_money_from_trading_balance_to_bank_balance('CLP', '2360')
+        return { "result" :etb}
 
