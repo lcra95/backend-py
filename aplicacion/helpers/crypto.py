@@ -33,36 +33,60 @@ class CryptoMarcket():
     
     @staticmethod
     def balance_compra():
+        # bal = [
+        #     {
+        #         "available": "0.135618561611",
+        #         "currency": "ETH",
+        #         "reserved": "0"
+        #     },
+        #     {
+        #         "available": "0.30417476",
+        #         "currency": "BNB",
+        #         "reserved": "0"
+        #     },
+        #     {
+        #         "available": "0.46008589",
+        #         "currency": "SOL",
+        #         "reserved": "0"
+        #     },
+        #     {
+        #         "available": "0.00294011",
+        #         "currency": "BTC",
+        #         "reserved": "0"
+        #     }
+	    # ]
+        bal = [{
+                "available": "0.22454",
+                "currency": "ETH",
+                "reserved": "0"
+        }]
+        return bal
+    @staticmethod
+    def balance_compra_eli():
         bal = [
             {
-                "available": "0.135618561611",
+                "available": "0.09799348",
                 "currency": "ETH",
                 "reserved": "0"
             },
             {
-                "available": "0.30417476",
+                "available": "0.14243038",
                 "currency": "BNB",
-                "reserved": "0"
-            },
-            {
-                "available": "0.46008589",
-                "currency": "SOL",
-                "reserved": "0"
-            },
-            {
-                "available": "0.00294011",
-                "currency": "BTC",
                 "reserved": "0"
             }
 	    ]
+
         return bal
 
     @staticmethod
-    def rateCryto():
+    def rateCryto(eli = None):
         junta = ","
         currencies = ''
-        # balance = CryptoMarcket.account_balance()
+        #balance = CryptoMarcket.account_balance()
         balance = CryptoMarcket.balance_compra()
+        if eli:
+            balance = CryptoMarcket.balance_compra_eli()
+            
         
         arr = []
         for x in balance:
@@ -132,6 +156,11 @@ class CryptoMarcket():
         cliente = CryptoMarcket.credenciales()
         currencies = cliente.get_currencies()
         return { "result" :currencies}
+    @staticmethod
+    def comission():
+        cliente = CryptoMarcket.credenciales()
+        comission = cliente.get_trading_commission('ETHCLP')
+        return { "result" :comission}
     @staticmethod
     def symbols():
         cliente = CryptoMarcket.credenciales()
