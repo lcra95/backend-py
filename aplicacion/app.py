@@ -259,7 +259,7 @@ def crypto():
     from aplicacion.telegram import bot
     from aplicacion.helpers.crypto import CryptoMarcket
     try: 
-        ultimoMoviemiento = 'VENTA'
+        ultimoMoviemiento = 'COMPRA'
         capital = 345390
         cu = CryptoMarcket.rateCryto()
         arr = {}
@@ -278,7 +278,7 @@ def crypto():
             msj1 = f"Vende diferencia {cu['Total_CLP'] - capital}"
             bot.send_message(5090328284, msj1)
 
-        return {"balance" : arr, "total" : cu["Total_CLP"], "venta": cu["Total_CLP"] - capital, "compra" : capital - cu["Total_CLP"], "capital" : capital}
+        return {"balance" : arr, "total" : cu["Total_CLP"], "venta": cu["Total_CLP"] - capital, "compra" : capital - cu["Total_CLP"], "comision": cu["comision"], "capital" : capital}
 
             
 

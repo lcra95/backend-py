@@ -82,8 +82,8 @@ class CryptoMarcket():
     def rateCryto(eli = None):
         junta = ","
         currencies = ''
-        #balance = CryptoMarcket.account_balance()
-        balance = CryptoMarcket.balance_compra()
+        balance = CryptoMarcket.account_balance()
+        #balance = CryptoMarcket.balance_compra()
         if eli:
             balance = CryptoMarcket.balance_compra_eli()
             
@@ -103,8 +103,9 @@ class CryptoMarcket():
                 y["price"] = res[y["currency"]]["price"]
                 y["CLP"] = round(float(y["available"]) * float(y["price"]))
                 total = total + y["CLP"]
+                comision = 0.002627941323 * float(y["price"])
         
-        return {"balance": balance, "Total_CLP" : total }
+        return {"balance": balance, "Total_CLP" : round(total - comision), "comision" : round(comision) }
 
     @staticmethod
     def account_balance():
