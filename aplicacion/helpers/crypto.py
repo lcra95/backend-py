@@ -82,7 +82,7 @@ class CryptoMarcket():
     def rateCryto(eli = None):
         junta = ","
         currencies = ''
-        balance = CryptoMarcket.account_balance()
+        balance = CryptoMarcket.trading_balance()
         #balance = CryptoMarcket.balance_compra()
         if eli:
             balance = CryptoMarcket.balance_compra_eli()
@@ -124,6 +124,7 @@ class CryptoMarcket():
         account_balance = cliente.get_trading_balance()
         temp = []
         for x in account_balance:
+            if float(x["available"]) > 0:
                 # cliente.transfer_money_from_bank_balance_to_trading_balance(x["currency"],x["available"])
                 temp.append(x)
         

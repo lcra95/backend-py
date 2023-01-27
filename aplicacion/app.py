@@ -289,6 +289,47 @@ def crypto():
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
         return {'mensaje': str(msj) }, 500
+
+@app.route('/tasadia')
+def binance():
+    from aplicacion.telegram import bot
+    from aplicacion.helpers.binance import Binance
+    try: 
+        bs = Binance.consulta_bs()
+        clp = Binance.consulta_clp()
+        arr = []
+        for n, y in zip(bs["data"],clp["data"]):
+            ves = round( float(n["adv"]["price"]),3 )
+            clps = round(  float(y["adv"]["price"]), 2 )
+            t0 = round(ves/clps, 4)
+            t10 = round(t0 * 0.90, 4)
+            t9 = round(t0 * 0.91, 4)
+            t8 = round(t0 * 0.92, 4)
+            t7 = round(t0 * 0.93, 4)
+            t6 = round(t0 * 0.94, 4)
+            t5 = round(t0 * 0.95, 4)
+            tmp = { 
+                "bs":ves,
+                "clp": clps,
+                "tasa0" : t0,
+                "tasa10" : t10,
+                "tasa9" : t9,
+                "tasa8" : t8,
+                "tasa7" : t7,
+                "tasa6" : t6,
+                "tasa5" : t5
+            }
+            arr.append(tmp)
+
+        return render_template("tasa_dia.html", data = arr)
+        
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
 @app.route('/cryptoeli')
 def crypto2():
     from aplicacion.telegram import bot

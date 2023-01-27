@@ -52,13 +52,13 @@ class MovimientoResource(Resource):
             dataJson = request.get_json()
             d1 = dataJson
             if "tipo_egreso" in dataJson and  dataJson["tipo_egreso"] is not None and dataJson["id_tipo_movimiento"] == "2":
-                
-                if dataJson["tipo_egreso"] == "1":
+                print("hello")
+                if dataJson["tipo_egreso"] == "1" or dataJson["tipo_egreso"] == 1:
                     valor = Movimiento.insert(dataJson)                    
                     if valor:
                        return {"estado": 1, "msj": "registro Exitoso"}
                 
-                elif dataJson["tipo_egreso"] == "2":
+                elif dataJson["tipo_egreso"] == "2" or dataJson["tipo_egreso"] == 2:
                     ins1 = {
                         "fecha" :dataJson["fecha"],
                         "monto" :dataJson["monto"] * 0.3,
@@ -79,7 +79,7 @@ class MovimientoResource(Resource):
                     if valor1:
                        return {"estado": 1, "msj": "registro Exitoso"}
 
-                elif dataJson["tipo_egreso"] == "3":
+                elif dataJson["tipo_egreso"] == "3" or dataJson["tipo_egreso"] == 3:
                     ins1 = {
                         "fecha" :dataJson["fecha"],
                         "monto" :dataJson["monto"] * 0.5,
