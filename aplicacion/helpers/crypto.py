@@ -26,8 +26,10 @@ baseUrl = "https://api.exchange.cryptomkt.com/api/3" #PROD
 class CryptoMarcket():
     @staticmethod
     def credenciales():
-        api_key='dxLG5WJEHgGHOH9F2pDD9isxA0NHHMAM'
-        api_secret='AHuGK94clpEeS06NhPXAoYwxUTnSfoNl'
+        # api_key='dxLG5WJEHgGHOH9F2pDD9isxA0NHHMAM' LUIS
+        # api_secret='AHuGK94clpEeS06NhPXAoYwxUTnSfoNl' ELI
+        api_key='XcNFz-7C-M173djuW_onp4tPQZwXewbV'
+        api_secret='aEu9LjounfFMMQlzqsyH6LQsm_Pjk4NJ'
         client = Client(api_key, api_secret) 
         return client
     

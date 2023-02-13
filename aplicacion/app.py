@@ -294,9 +294,16 @@ def crypto():
 def binance():
     from aplicacion.telegram import bot
     from aplicacion.helpers.binance import Binance
+    parser = reqparse.RequestParser()
+    parser.add_argument('front',
+                        type=int,
+                        required=False,
+                        help="Debe indicar una atención"
+                        )
+    data = parser.parse_args()
     try: 
         bs = Binance.consulta_bs()
-        clp = Binance.consulta_clp()
+        clp = Binance.consulta_clp()       
         arr = []
         for n, y in zip(bs["data"],clp["data"]):
             ves = round( float(n["adv"]["price"]),3 )
@@ -320,7 +327,7 @@ def binance():
                 "tasa5" : t5
             }
             arr.append(tmp)
-
+            
         return render_template("tasa_dia.html", data = arr)
         
     except Exception as e:
@@ -330,13 +337,146 @@ def binance():
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
         return {'mensaje': str(msj) }, 500
+@app.route('/binance/eth')
+def binanceEth():
+    from aplicacion.helpers.binance import Binance
+    from aplicacion.modelos.EtheriumClp import EtheriumClp
+    try:
+        montoInicialClp = 100000
+        montoInicialUsdt = 124.62
+        montoInicialEth = 0.08075185    
+        Eths = Binance.consulta_eth()
+        for n in Eths["data"]:
+            eth = round( float(n["adv"]["price"]),3 )
+
+        valorActual = montoInicialEth * eth
+        dif = valorActual - montoInicialClp
+
+
+
+        response = {
+            "valoreth" : eth,
+            "eth" : montoInicialEth,
+            "clpinicial" : montoInicialClp,
+            "valor" : valorActual,
+            "diferencia" : dif
+        }
+
+        EtheriumClp.insert(response)
+        if dif > 2800 :
+            response["accion"] ="Positvo Vender"
+
+
+        return response
+
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
+@app.route('/calculoenvio')
+def binance1():
+    from aplicacion.telegram import bot
+    from aplicacion.helpers.binance import Binance
+    parser = reqparse.RequestParser()
+    parser.add_argument('bs',
+                        type=int,
+                        required=False,
+                        help="Debe indicar una atención"
+                        )
+    parser.add_argument('clp',
+                        type=int,
+                        required=False,
+                        help="Debe indicar una atención"
+                        )
+    parser.add_argument('usd',
+                        type=int,
+                        required=False,
+                        help="Debe indicar una atención"
+                        )
+    parser.add_argument('tasa',
+                        type=float,
+                        required=True,
+                        help="Debe indicar una atención"
+                        )
+
+    data = parser.parse_args()
+
+    try: 
+        comision = 1.002999
+        if "clp" in data and data["clp"] is not None :
+            CambioBs = data["clp"] * data["tasa"]
+            bs = Binance.consulta_bs(CambioBs)
+            clp = Binance.consulta_clp(data["clp"])   
+            for n, y in zip(bs["data"],clp["data"]):
+                ves = round( float(n["adv"]["price"]),3 )
+                clps = round(  float(y["adv"]["price"]), 2 )    
+            bsComision = round(CambioBs * comision, 2 )
+            usdComprar = round(bsComision/ ves, 2 )
+            ganancia = int(data["clp"] - (clps * usdComprar))
+            margen = round((ganancia * 100)/data["clp"],2)
+            CambioCLP = data["clp"] 
+
+        if "bs" in data and data["bs"] is not None :
+            CambioCLP = data["bs"] / data["tasa"]
+            bs = Binance.consulta_bs(data["bs"])
+            clp = Binance.consulta_clp(CambioCLP)  
+            for n, y in zip(bs["data"],clp["data"]):
+                ves = round( float(n["adv"]["price"]),3 )
+                clps = round(  float(y["adv"]["price"]), 2 )    
+            
+            bsComision = round(data["bs"] * comision, 2 )
+            usdComprar = round(bsComision/ ves, 2 )
+            ganancia = int(CambioCLP - (clps * usdComprar))
+            margen = round((ganancia * 100)/CambioCLP,2)     
+            CambioBs = data["bs"]
+        
+        if "usd" in data and data["usd"] is not None :
+           
+            bs = Binance.consulta_bs()
+            clp = Binance.consulta_clp()   
+            for n, y in zip(bs["data"],clp["data"]):
+                ves = round( float(n["adv"]["price"]),3 )
+                clps = round(  float(y["adv"]["price"]), 2 )    
+            
+            CambioBs = round(data["usd"] * ves,2)
+            bsComision = round(CambioBs * comision, 2 )
+            CambioCLP = int(bsComision / data["tasa"])     
+            usdComprar = round(bsComision/ ves, 2 )
+            ganancia = int(CambioCLP - (clps * usdComprar))
+            margen = round((ganancia * 100)/CambioCLP,2)
+
+
+
+        return {
+            "clp_cambio" : CambioCLP,
+            "clp_precio" : clps,
+            "bs_precio" : ves,
+            "bs_remesa" : CambioBs,
+            "bs_comision" :bsComision,
+            "usd_comprar" : usdComprar,
+            "ganancia" : ganancia,
+            "margen": margen
+        }
+        
+        
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
+
 @app.route('/cryptoeli')
 def crypto2():
     from aplicacion.telegram import bot
     from aplicacion.helpers.crypto import CryptoMarcket
     try: 
-        ultimoMoviemiento = 'VENTA'
-        capital = 179000
+        ultimoMoviemiento = 'COMPRA'
+        capital = 159129
         cu = CryptoMarcket.rateCryto(True)
         arr = {}
         msj1 = '---------------*******---------------\n'
@@ -349,10 +489,10 @@ def crypto2():
         msj1 += f"BAL => {cu['Total_CLP']} \n"
         if capital - cu["Total_CLP"] > 7500 and ultimoMoviemiento == 'VENTA':
             msj1+= f"""ELI Compra diferencia {capital - cu['Total_CLP']}"""
-            bot.send_message(5090328284, msj1)
+            # bot.send_message(5090328284, msj1)
         if  cu["Total_CLP"] - capital  > 7500 and ultimoMoviemiento == 'COMPRA':
             msj1 = f"ELI Vende diferencia {cu['Total_CLP'] - capital}"
-            bot.send_message(5090328284, msj1)
+            #bot.send_message(5090328284, msj1)
 
         return {"balance" : arr, "total" : cu["Total_CLP"], "venta": cu["Total_CLP"] - capital, "compra" : capital - cu["Total_CLP"], "capital" : capital}
 
