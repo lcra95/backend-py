@@ -63,6 +63,7 @@ from aplicacion.recursos.TipoDocumento import TipoDocumentoResource
 from aplicacion.recursos.Recepcion import RecepcionResource
 from aplicacion.recursos.ProductoStock import ProductoStockResource
 from aplicacion.recursos.movimiento import MovimientoResource
+from aplicacion.recursos.inventario import InventarioResource
 #Inicializacion de flask
 app = Flask(__name__, 
 static_url_path='/api_static',
@@ -144,6 +145,9 @@ api.add_resource(MovimientoResource, '/movimiento')
 
 #telegram
 api.add_resource(notificaOrdenResourse, '/notifica')
+
+#inventario flutter
+api.add_resource(InventarioResource, '/inventario')
 
 
 
@@ -302,6 +306,7 @@ def binance():
                         )
     data = parser.parse_args()
     try: 
+
         bs = Binance.consulta_bs()
         clp = Binance.consulta_clp()       
         arr = []
@@ -664,6 +669,31 @@ def webpay1():
             }
             return render_template('redirect.html', data = result)
             return data
+    except Exception as e:
+        print("=======================E")
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+        return {'mensaje': str(msj) }, 500
+
+@app.route('/gptchat')
+def chatgpt():
+    try:
+        
+        from aplicacion.helpers.ChatGpt import GPT
+        parser = reqparse.RequestParser()
+        parser.add_argument('prompt',
+                    type=str,
+                    required=False,
+                    help="Debe indicar una atención"
+                    )
+        dataJson = parser.parse_args()
+        response = "756"
+        # return dataJson
+        response = GPT.consultar_chatgpt(dataJson["prompt"])
+        
+        return response 
     except Exception as e:
         print("=======================E")
         print(e)
