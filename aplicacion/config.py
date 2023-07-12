@@ -11,7 +11,7 @@ class TestingConfig(Config):
     """
     Testing configurations 
     """
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://lrequena:18594LCra..@45.7.229.203:3306/delivery"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://lrequena:18594LCra..@170.239.85.238/delivery"
     SQLALCHEMY_POOL_RECYCLE = 200
     DEBUG = True
     TESTING = True

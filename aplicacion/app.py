@@ -186,7 +186,9 @@ def getimagen(path):
     # print(app.config['ROOT_PATH']+ '/backend-py/aplicacion/clients/01/'+path)
     # print("------------------")
     return send_file(app.config['ROOT_PATH']+ '/backend-py/aplicacion/clients/01/'+path)
-
+@app.route('/tasa')
+def tasa():
+    return {"tasa": "0.0342"}
 @app.route('/pagoenlinea', methods=['GET', 'POST'] )
 def pagoscallback():
     print("############### PAGOS CALLBACK ##################")
