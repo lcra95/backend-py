@@ -188,7 +188,24 @@ def getimagen(path):
     return send_file(app.config['ROOT_PATH']+ '/backend-py/aplicacion/clients/01/'+path)
 @app.route('/tasa')
 def tasa():
-    return {"tasa": "0.0344"}
+    from aplicacion.modelos.Tasa import Tasa
+    parser = reqparse.RequestParser()
+    parser.add_argument('tasa',
+                            type=str,
+                            required=False,
+                            help="Debe indicar una fecha",
+                            
+                            )
+    
+    data = parser.parse_args() 
+    tasa =  data.get("tasa")
+    if tasa is not None:
+        Tasa.update_data({"tasa": tasa})
+        return {"msj": f"tasa actualizada {tasa}"}
+    else:
+        info = Tasa.get_data()
+    
+    return {"tasa": info[0]["tasa"]}
 @app.route('/pagoenlinea', methods=['GET', 'POST'] )
 def pagoscallback():
     print("############### PAGOS CALLBACK ##################")
