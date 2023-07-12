@@ -420,6 +420,21 @@ def binance1():
                         required=False,
                         help="Debe indicar una atención"
                         )
+    parser.add_argument('BS',
+                        type=int,
+                        required=False,
+                        help="Debe indicar una atención"
+                        )
+    parser.add_argument('CLP',
+                        type=int,
+                        required=False,
+                        help="Debe indicar una atención"
+                        )
+    parser.add_argument('USD',
+                        type=int,
+                        required=False,
+                        help="Debe indicar una atención"
+                        )
     parser.add_argument('tasa',
                         type=float,
                         required=True,
@@ -429,6 +444,16 @@ def binance1():
     data = parser.parse_args()
 
     try: 
+        Mclp = data.get('CLP')
+        if Mclp is not None:
+            data["clp"] = data["CLP"]
+        Mbs = data.get('BS')
+        if Mbs is not None:
+            data["bs"] = data["BS"]
+        Musd = data.get('USD')
+        if Musd is not None:
+            data["usd"] = data["USD"]
+            
         comision = 1.002999
         if "clp" in data and data["clp"] is not None :
             CambioBs = data["clp"] * data["tasa"]
