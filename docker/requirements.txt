@@ -60,3 +60,4 @@ pyTelegramBotAPI
 sendgrid
 cryptomarket
 openai
+bs4

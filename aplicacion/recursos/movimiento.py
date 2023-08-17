@@ -37,14 +37,14 @@ class MovimientoResource(Resource):
             datos = Movimiento.get_data_fecha(data["fecha_ini"], data["fecha_fin"], data["tipo_movimiento"])
             
                         
-            return {  "response":{"data": { "info": datos }}}, 200
+            return {  "response":datos}, 200
             
 
         except Exception as e:
-            print(" ## Error ## \n")
-            print(e)
-            print("\n")
-            return {"message": "Ha ocurrido un error de conexión."}, 500
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
+            return {'mensaje': str(msj)},500
 
     def post(self):
         try:

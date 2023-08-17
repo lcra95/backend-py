@@ -8,7 +8,7 @@ from sqlalchemy.dialects.mysql.enumerated import ENUM
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.functions import func
 from aplicacion.helpers.utilidades import Utilidades
-
+from datetime import datetime, timedelta
 # db = SQLAlchemy()
 
 from aplicacion.db import db
@@ -95,39 +95,82 @@ class Movimiento(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    from datetime import datetime, timedelta
+
     @classmethod
-    def get_data_fecha(cls, fecha_ini, fecha_fin = None, tipo_movimiento = None):
-        filtro = ' '
+    def get_data_fecha(cls, fecha_ini, fecha_fin=None, tipo_movimiento=None):
+        cisterna = []
+        san_miguel = []
+        san_ignacio = []
+        tcisterna = 0
+        tsmiguel = 0
+        tsignacio = 0
+        ventas = []
+        info = []
+        tventas = 0
         if fecha_fin is None:
-            filtro += "AND m.fecha = '" + str(fecha_ini) + "' "
-        else:
-            filtro += "AND m.fecha >= '" + str(fecha_ini) + "' AND m.fecha <= '" + str(fecha_fin) +"' " 
+            fecha_formato = "%Y-%m-%d"
+            fecha_objeto = datetime.strptime(fecha_ini, fecha_formato).date()
+            fecha_fin = fecha_objeto + timedelta(days=7)
 
-        if tipo_movimiento is not None:
-            filtro += "AND m.id_tipo_movimiento = " +str(tipo_movimiento)
+        filtro = ' '
 
-        sql = "SELECT \
-                    m.fecha, \
-                    if(tm.id = 1, m.monto, m.monto*-1 ) as monto_bruto, \
-                    (m.monto * cc.comision) as comision, \
-                    m.concepto, \
-                    cc.descripcion \
-                FROM movimiento m \
-                JOIN tipo_movimiento tm ON tm.id = m.id_tipo_movimiento \
-                JOIN centro_costo cc ON cc.id = m.id_centro_costo \
-                WHERE 1 = 1 " + str(filtro)
+        filtro += " m.fecha >= '" + str(fecha_ini) + "' AND m.fecha <= '" + str(fecha_fin) + "' " 
+
         
+        sql = f"SELECT * FROM movimiento m WHERE {filtro}"
+
         query = db.session.execute(sql)
         result = []
         if query:
             for x in query:
+                fec = str(x.fecha).split(' ')
                 temp = {
-                   "fecha": str(x.fecha),
-                   "monto_bruto": x.monto_bruto,
-                   "comision": str(x.comision),
-                   "concepto": x.concepto,
-                   "descripcion": x.descripcion
+                    "fecha": fec[0],
+                    "monto_bruto": x.monto,
+                    "concepto": x.concepto,
+
                 }
-                result.append(temp)
+                if x.id_centro_costo == 9:
+                    tcisterna += x.monto
+                    cisterna.append(temp)
+                elif x.id_centro_costo == 8:
+                    tsignacio += x.monto
+                    san_ignacio.append(temp)
+                elif x.id_centro_costo == 7:
+                    tsmiguel += x.monto
+                    san_miguel.append(temp)
+                else:
+                    ventas.append(temp)
         
-        return  result
+        
+        grouped_data_dict = {}
+
+        for item in ventas:
+            fecha = item['fecha']
+            if fecha not in grouped_data_dict:
+                grouped_data_dict[fecha] = {'fecha': fecha, 'total': 0, 'registros': []}
+            grouped_data_dict[fecha]['registros'].append(item)
+            grouped_data_dict[fecha]['total'] += item['monto_bruto']
+
+        grouped_data_list = list(grouped_data_dict.values())
+
+        print(grouped_data_list)
+
+        
+        for y in grouped_data_list:
+            print(y)
+            tventas += y["total"]
+
+
+        return {
+            "ventas" : grouped_data_list,
+            "la_cisterna": cisterna,
+            "san_miguel": san_miguel,
+            "san_ignacio": san_ignacio,
+            "total_cisterna" : tcisterna,
+            "total_san_miguel" : tsmiguel,
+            "total_san_igancio" : tsignacio,
+            "total_ventas" :tventas
+        }
+

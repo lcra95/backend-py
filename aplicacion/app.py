@@ -21,12 +21,12 @@ from flask_restful import Api, Resource, reqparse
 from flask_mail import Mail
 from ftplib import FTP
 # from flask_analytics import Analytics
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from aplicacion.config import app_config
 from aplicacion.db import db
 from aplicacion.redis import redis
 import random
-
+from bs4 import BeautifulSoup
 # IMPORTACIÓN DE RECURSOS
 from aplicacion.recursos.TipoDireccion import TipoDireccionResource
 from aplicacion.recursos.Direccion import DireccionResource, GetPlacesResource,GetMatrixResource
@@ -519,6 +519,47 @@ def binance1():
         msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
         return {'mensaje': str(msj) }, 500
 
+@app.route('/valordolar')
+def valordolar():
+
+
+    url = "https://exchangemonitor.net/rates/data-new"
+    urlbcv = 'https://www.bcv.org.ve/'
+
+    querystring = {"reconv":"1","type":"ve","badge":"enparalelovzla"}
+
+    payload = ""
+    response = requests.request("GET", url, data=payload, params=querystring)
+
+    inf = json.loads(response.text)
+    longitud = len(inf["data"]) - 1
+    tasa = inf["data"][longitud]
+    paralelo = tasa[1]
+
+
+
+    # Realizamos la solicitud HTTP GET a la página
+    response = requests.get(urlbcv)
+
+    # Parseamos el contenido HTML utilizando BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Encontramos el div con el id "dolar" y obtenemos su valor
+    dolar_div = soup.find('div', {'id': 'dolar'})
+    valor_dolar = dolar_div.text.strip()
+    valor_limpio = valor_dolar.replace("USD", "").strip()
+
+    # Reemplazar la coma por un punto decimal
+    valor_limpio = valor_limpio.replace(",", ".")
+
+    # Convertir el valor a un número de punto flotante y redondear a dos decimales
+    valor_convertido = round(float(valor_limpio), 2)
+
+
+    nvalor_dolar = valor_dolar.split(" ")
+    # Imprimimos el valor del div "dolar"
+    return {"paralelo" : paralelo, "BCV" : valor_convertido}
+
 @app.route('/cryptoeli')
 def crypto2():
     from aplicacion.telegram import bot
@@ -745,6 +786,42 @@ def chatgpt():
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         msj = 'Error: '+ str(exc_obj) + ' File: ' + fname +' linea: '+ str(exc_tb.tb_lineno)
         return {'mensaje': str(msj) }, 500
+
+def get_mondays(year, month):
+    date = datetime(year, month, 1)
+    date += timedelta(days=(0 - date.weekday()) % 7)
+    while date.year == year and date.month <= month:
+        yield date.strftime('%Y-%m-%d')
+        date += timedelta(days=7)
+
+@app.route('/mondays/<int:year>/<int:month>')
+def mondays(year, month):
+    if year < 1 or month < 1 or month > 12:
+        return jsonify(error='Invalid year or month'), 400
+
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+
+    if year > current_year or (year == current_year and month > current_month):
+        return jsonify(error='Requested date is in the future'), 400
+
+    result = list(get_mondays(year, month))
+    return jsonify(dates=result)
+@app.route('/current-month-year')
+def current_month_year():
+    now = datetime.now()
+    current_month = str(now.month)
+    current_year = str(now.year)
+    return jsonify(month=current_month, year=current_year)
+
+@app.route('/whatsapp',methods=['POST', 'GET'])
+def whatsapp():
+    if request.method == 'GET':
+        return "HI"
+    if request.method == 'POST':
+        return "HI-1"
+
+
 #INICIAMOS LA APLICACIÓN
 app.run(host='0.0.0.0', port=5000, debug=True )
     
