@@ -816,16 +816,20 @@ def current_month_year():
 
 @app.route('/whatsapp',methods=['POST', 'GET'])
 def whatsapp():
+    from aplicacion.modelos.Teleg import Telegram
     if request.method == 'GET':
         return "HI"
     if request.method == 'POST':
         data = request.get_json(silent=True)
-
+        print("-----------------------")
         if data is None:
             # Si no se obtuvo data en formato JSON, asume que es form-data
             data = request.form.to_dict()
         
+        print("-----------------------")
         print(data)
+        Telegram.insert({"id": 1, "id_update" : "text", "id_chat": str(data)})
+        print("-----------------------")
         # Haz algo con los datos (en este caso, simplemente devuélvelos)
         return data, 200
 
