@@ -819,7 +819,15 @@ def whatsapp():
     if request.method == 'GET':
         return "HI"
     if request.method == 'POST':
-        return "HI-1"
+        data = request.get_json(silent=True)
+
+        if data is None:
+            # Si no se obtuvo data en formato JSON, asume que es form-data
+            data = request.form.to_dict()
+        
+        print(data)
+        # Haz algo con los datos (en este caso, simplemente devuélvelos)
+        return data, 200
 
 
 #INICIAMOS LA APLICACIÓN
