@@ -827,9 +827,9 @@ def whatsapp():
             data = request.form.to_dict()
         
         print("-----------------------")
-        print(data)
-        Telegram.insert({"id": 1, "id_update" : "text", "id_chat": str(data)})
-        print("-----------------------")
+        print(data["body"])
+        # Telegram.insert({"id": 1, "id_update" : "text", "id_chat": str(data)})
+        # print("-----------------------")
         # Haz algo con los datos (en este caso, simplemente devuélvelos)
         return data, 200
 
