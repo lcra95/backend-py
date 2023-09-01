@@ -28,7 +28,7 @@ class Binance():
     staticmethod
     def consulta_bs(bs = None):
         if bs is None:
-            bs = 500
+            bs = 4000
         import http.client
 
         conn = http.client.HTTPSConnection("p2p.binance.com")
@@ -37,7 +37,7 @@ class Binance():
             "proMerchantAds": False,
             "page": 1,
             "rows": 1,
-            "payTypes": ["BancoDeVenezuela"
+            "payTypes": ["PagoMovil"
             ],
             "countries": [],
             "publisherType": "merchant",
@@ -58,7 +58,7 @@ class Binance():
             'content-type': "application/json",
             'lang': "es",
             'origin': "https://p2p.binance.com",
-            'referer': "https://p2p.binance.com/es/trade/sell/USDT?fiat=VES&payment=BancoDeVenezuela",
+            'referer': "https://p2p.binance.com/es/trade/sell/USDT?fiat=VES&payment=PagoMovil",
             'sec-ch-ua': "^\^Not?A_Brand^^;v=^\^8^^, ^\^Chromium^^;v=^\^108^^, ^\^Google",
             'sec-ch-ua-mobile': "?0",
             'sec-ch-ua-platform': "^\^Windows^^",
